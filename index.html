@@ -18,7 +18,16 @@
   <header id="mainHeader">
     <div class="header-title">Treino Monstro</div>
     <div class="brand-buttons">
-      <!-- Botões GymRats / Spotify (abrem nova aba) -->
+      <!-- NOVO Botão "Changelog" (esquerda) -->
+      <button class="brand-button" onclick="abrirChangelog()">
+        <img 
+          src="https://cdn-icons-png.flaticon.com/512/1361/1361897.png" 
+          alt="Changelog"
+          style="object-fit:contain;"
+        />
+      </button>
+
+      <!-- Botões GymRats / Spotify -->
       <button class="brand-button" onclick="abrirGymrats()">
         <img 
           src="https://play-lh.googleusercontent.com/aVsTwWBG8K1tSmZpuOEL5mNN7kv-F9yCgggmVnsvDCT5teGeYlP3KM0b_OCZPyhGUyw" 
@@ -42,13 +51,36 @@
     </div>
   </div>
 
-  <!-- MODAL PARABÉNS (Fundo branco+glass+confetes) -->
+  <!-- MODAL PARABÉNS -->
   <div class="modal-congrats" id="modalCongrats">
     <div class="modal-congrats-content">
       <h2>Parabéns, treino concluído!</h2>
       <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
+      <!-- NOVO botão Exportar dentro da modal -->
+      <button onclick="exportarCSV()">Exportar</button>
       <button onclick="fecharCongrats()">Fechar</button>
       <button onclick="abrirCamera()">Abrir Câmera</button>
+    </div>
+  </div>
+
+  <!-- MODAL CHANGELOG -->
+  <div class="modal-overlay" id="modalChangelog">
+    <div class="modal-content">
+      <h2>Changelog</h2>
+      <div id="changelogBody" style="text-align:left;">
+        <!-- Vamos injetar via script ou pode colocar fixo -->
+        <p><strong>Versão 1.0</strong><br/>
+        - Lançamento inicial do Treino Monstro</p>
+        <hr/>
+        <p><strong>Versão 1.1</strong><br/>
+        - Adicionadas novas funcionalidades no contador<br/>
+        - Correções no tracker</p>
+        <hr/>
+        <p><strong>Versão 1.2</strong><br/>
+        - Layout mobile melhorado<br/>
+        - Countdown com fundo branco e glass</p>
+      </div>
+      <button onclick="fecharChangelog()">Fechar</button>
     </div>
   </div>
 
@@ -57,31 +89,33 @@
     <div class="sidebar">
       <h2>Controle do Treino</h2>
 
-      <!-- Timers Desktop: Exercício e Descanso Lado a Lado -->
+      <!-- Timers Desktop -->
       <div class="timers-desktop">
         <div class="timerBoxContainer">
+          <!-- Exercicio (texto 12px e bold) + tempo maior -->
           <div class="timerValue exercise" id="exerciseTimer">
-            <strong>Exercício</strong><br/>
+            <strong style="font-size:12px;">Exercício</strong><br/>
             <span id="exerciseTimeValue">00:00</span>
           </div>
         </div>
         <div class="timerBoxContainer">
+          <!-- Descanso -->
           <div class="timerValue rest" id="restTimer">
-            <strong>Descanso</strong><br/>
+            <strong style="font-size:12px;">Descanso</strong><br/>
             <span id="restTimeValue">00:00</span>
           </div>
         </div>
       </div>
 
       <!-- Último Exercício -->
-      <div class="lastLineDesktop" id="lastExerciseTime">Último Exercício: --</div>
+      <div class="lastLineDesktop" id="lastExerciseTime">
+        Último Exercício:<br/>
+        --
+      </div>
 
       <div class="desktop-buttons">
-        <!-- Botão Único (Play/Pause) -->
         <button class="desktop-btn" id="playPauseBtn">▶ Iniciar</button>
-        <!-- Botão Stop -->
         <button class="desktop-btn" id="stopBtn">⏹ Encerrar</button>
-
         <div class="divider"></div>
         <button class="desktop-btn" id="trackerDesktopBtn">Tracker</button>
         <button class="desktop-btn" id="exportDesktopBtn">⬇ Exportar</button>
@@ -94,10 +128,10 @@
       </div>
     </div>
 
-    <!-- MAIN CONTENT (TREINOS) -->
+    <!-- MAIN CONTENT (Treinos) -->
     <div class="main-content">
       <nav>
-        <!-- Treino A ativo por padrão -->
+        <!-- Treino A ativo (sem cor de fundo especial) -->
         <button onclick="mostrarTreino('treinoA')" class="activeBtn">Treino A</button>
         <button onclick="mostrarTreino('treinoB')">Treino B</button>
       </nav>
@@ -113,7 +147,6 @@
         <div class="exercicios">
           <h3>Exercícios Principais (3 séries x 10-12 rep.)</h3>
           <ul>
-            <!-- 1) Supino Reto (Peito) -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Supino Reto (Peito)">
               <div class="thumb-container">
@@ -125,7 +158,6 @@
               <label>🔥 Supino Reto (Peito)</label>
               <span class="tempo"></span>
             </li>
-            <!-- 2) Remada Baixa (Costas) -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Remada Baixa (Costas)">
               <div class="thumb-container">
@@ -137,7 +169,6 @@
               <label>🔥 Remada Baixa (Costas)</label>
               <span class="tempo"></span>
             </li>
-            <!-- 3) Desenvolvimento de Ombros -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Desenvolvimento de Ombros">
               <div class="thumb-container">
@@ -149,7 +180,6 @@
               <label>🔥 Desenvolvimento de Ombros</label>
               <span class="tempo"></span>
             </li>
-            <!-- 4) Rosca Bíceps -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Rosca Bíceps">
               <div class="thumb-container">
@@ -161,7 +191,6 @@
               <label>🔥 Rosca Bíceps</label>
               <span class="tempo"></span>
             </li>
-            <!-- 5) Tríceps na Polia -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Tríceps na Polia">
               <div class="thumb-container">
@@ -196,7 +225,7 @@
                 <img 
                   src="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"
                   alt="Prancha"
-                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
+                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
               </div>
               <label>💪 Prancha (20-30 seg)</label>
               <span class="tempo"></span>
@@ -228,7 +257,7 @@
         </div>
       </section>
 
-      <!-- TREINO B (Parte Inferior) -->
+      <!-- TREINO B -->
       <section id="treinoB">
         <h2>Treino B (Parte Inferior)</h2>
         <div class="objetivo">
@@ -317,7 +346,7 @@
                 <img 
                   src="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"
                   alt="Prancha"
-                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
+                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
               </div>
               <label>💪 Prancha (20-30 seg)</label>
               <span class="tempo"></span>
@@ -359,18 +388,22 @@
   <div class="bottom-bar" id="mobileBar">
     <div class="timers-mobile">
       <div class="timerBoxMobile">
-        <div class="timerLabelMobile">Exercício</div>
+        <!-- Exercicio no mesmo bloco -->
+        <div class="timerLabelMobile" style="font-size:12px;font-weight:bold;">Exercício</div>
         <div class="timerValueMobile exercise" id="exerciseTimerMobile">00:00</div>
       </div>
       <div class="timerBoxMobile">
-        <div class="timerLabelMobile">Descanso</div>
+        <div class="timerLabelMobile" style="font-size:12px;font-weight:bold;">Descanso</div>
         <div class="timerValueMobile rest" id="restTimerMobile">00:00</div>
       </div>
     </div>
-    <div class="lastLineMobile" id="lastExerciseTimeMobile">Último Exercício: --</div>
+    <div class="lastLineMobile" id="lastExerciseTimeMobile">
+      Último Exercício:<br/>
+      --
+    </div>
 
     <div class="mobile-row">
-      <!-- Somente ícone no mobile -->
+      <!-- Somente ícone (sem texto) -->
       <button class="mobile-btn" id="playPauseBtnMobile">▶</button>
       <button class="mobile-btn" id="stopBtnMobile">⏹</button>
     </div>
@@ -380,7 +413,6 @@
       <button class="mobile-btn" id="exportBtnMobile">Exportar</button>
     </div>
 
-    <!-- Tracker Mobile (fechado) -->
     <div class="tracker-mobile" id="trackerMobile" style="display:none;">
       <ul id="trackerMobileList"></ul>
     </div>
@@ -392,7 +424,7 @@
     <img id="lightboxImg" src="" alt="Exercício"/>
   </div>
 
-  <!-- Script JS externo -->
+  <!-- Script JS -->
   <script src="script.js"></script>
 </body>
 </html>

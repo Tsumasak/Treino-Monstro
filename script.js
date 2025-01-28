@@ -1,22 +1,22 @@
 /* 
   script.js
-  - Lógica do countdown com fundo branco + glass
-  - Botão Play/Pause (troca “▶” e “⏸”)
-  - Contador Exercício e Descanso com intervalEx e intervalRest
-  - “Último Exercício” sem milissegundos
-  - Confetti menor e mais rápido
-  - Tracker com nomes em bold
+  - Exercicio e Descanso: com intervals
+  - Botões mobile só ícones
+  - Último Exercício => 2 linhas
+  - Tracker => nome bold, tempo normal (injetado no DOM)
+  - Modal confetes com fundo glass
+  - Novo btn Exportar na modal parabéns
+  - Changelog modal
 */
 
 let treinoIniciado=false, treinoEncerrado=false, paused=false;
 let accumulatedTime=0; // Exercício
 let startPauseTime=0;
 let lastCheckTime=0;
-let intervalEx=null;   // Interval do exercicio
-let intervalRest=null; // Interval do descanso
+let intervalEx=null;   // Interval p/ exercicio
+let intervalRest=null; // Interval p/ descanso
 
 let totalA=0, doneA=0, totalB=0, doneB=0;
-
 let restTotal=0;
 let restStart=0;
 let restRunning=false;
@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     const grp=ch.dataset.group;
     if(grp==='A') totalA++;
     if(grp==='B') totalB++;
-    ch.disabled=true; 
+    ch.disabled=true;
     ch.addEventListener('change', handleCheck);
   });
 
@@ -62,7 +62,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   // Lightbox
   const lb=document.getElementById('lightbox');
   lb.addEventListener('click',(e)=>{ if(e.target===lb) fecharLightbox(); });
-
   document.querySelectorAll('.thumb-container img').forEach(img=>{
     img.addEventListener('click',()=>{
       document.getElementById('lightboxImg').src=img.dataset.full;
@@ -70,7 +69,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
-  // Header hide on scroll
+  // Hide header on scroll
   let lastScrollTop=0;
   window.addEventListener('scroll',()=>{
     const st=window.pageYOffset||document.documentElement.scrollTop;
@@ -89,7 +88,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   confettiCanvas.height=window.innerHeight;
   ctx=confettiCanvas.getContext('2d');
 
-  // Countdown overlay c/ glass e fundo branco
+  // Countdown Overlay
   countdownOverlay=document.createElement('div');
   countdownOverlay.style.position='fixed';
   countdownOverlay.style.top='0'; 
@@ -112,11 +111,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   countdownOverlay.appendChild(countdownDiv);
 });
 
-/* ---------- FUNÇÕES PLAY/PAUSE/STOP ---------- */
+/* ---------- FUNÇÕES: PLAY/PAUSE/STOP ---------- */
 function togglePlayPause(){
   if(treinoEncerrado)return;
   if(!treinoIniciado){
-    // primeira vez
     if(firstStart){
       firstStart=false;
       showCountdown();
@@ -124,12 +122,9 @@ function togglePlayPause(){
       iniciarExercicio();
     }
   } else {
-    // já iniciou
     if(!paused){
-      // pausar
       pausarTreino();
     } else {
-      // retomar
       iniciarExercicio();
     }
   }
@@ -162,16 +157,16 @@ function iniciarExercicio(){
   paused=false;
   startPauseTime=Date.now();
 
-  // Interval do exercicio
   if(intervalEx) clearInterval(intervalEx);
   intervalEx=setInterval(()=>{
     const elapsed=accumulatedTime+(Date.now()-startPauseTime);
-    document.getElementById('exerciseTimer').innerHTML=`<strong>Exercício</strong><br/><span id="exerciseTimeValue">${formatTime(elapsed)}</span>`;
-    document.getElementById('exerciseTimerMobile').textContent= formatTime(elapsed); 
-    // (ou se quiser tb com strong no mobile)
+    // Desktop
+    document.getElementById('exerciseTimeValue').textContent=formatTime(elapsed);
+    // Mobile
+    document.getElementById('exerciseTimerMobile').textContent=formatTime(elapsed);
   },50);
 
-  // se estava descansando
+  // Se estava descansando
   if(restRunning){
     restRunning=false;
     if(intervalRest) clearInterval(intervalRest);
@@ -180,8 +175,7 @@ function iniciarExercicio(){
   }
 
   setCheckBoxesDisabled(false);
-
-  // Botão vira “⏸ Pausar” no desktop e “⏸” no mobile
+  // Botão vira Pausar
   document.getElementById('playPauseBtn').textContent="⏸ Pausar";
   document.getElementById('playPauseBtnMobile').textContent="⏸";
 }
@@ -201,7 +195,9 @@ function pausarTreino(){
   if(intervalRest) clearInterval(intervalRest);
   intervalRest=setInterval(()=>{
     const r=restTotal+(Date.now()-restStart);
-    document.getElementById('restTimer').innerHTML=`<strong>Descanso</strong><br/><span id="restTimeValue">${formatTime(r)}</span>`;
+    // Desktop
+    document.getElementById('restTimeValue').textContent=formatTime(r);
+    // Mobile
     document.getElementById('restTimerMobile').textContent=formatTime(r);
   },50);
 
@@ -217,8 +213,7 @@ function encerrarTreino(){
     if(intervalEx)clearInterval(intervalEx);
     intervalEx=null;
   }
-  treinoEncerrado=true;
-  paused=true;
+  treinoEncerrado=true; paused=true;
 
   if(restRunning){
     restRunning=false;
@@ -227,7 +222,6 @@ function encerrarTreino(){
     restTotal+=(Date.now()-restStart);
   }
   updateRestDisplay();
-
   document.getElementById('modalCongrats').classList.add('show');
   startConfetti();
 }
@@ -270,21 +264,23 @@ function handleCheck(e){
     return;
   }
   const grp=e.target.dataset.group;
+  const exerciseName=e.target.dataset.exercise; 
   if(e.target.checked){
     if(grp==='A') doneA++; else if(grp==='B') doneB++;
-
-    // Remover milissegundos p/ “último exercício”
     const partial=(accumulatedTime+(Date.now()-startPauseTime))-lastCheckTime;
     lastCheckTime=accumulatedTime+(Date.now()-startPauseTime);
 
-    const exerciseName=e.target.dataset.exercise; // ex: "Remada Baixa (Costas)"
-    const strNoMs=formatTimeNoMs(partial); // remover milissegundos
-    document.getElementById('lastExerciseTime').textContent=
-      `Último Exercício: ${exerciseName} -> ${strNoMs}`;
-    document.getElementById('lastExerciseTimeMobile').textContent=
-      `Último Exercício: ${exerciseName} -> ${strNoMs}`;
+    const strNoMs=formatTimeNoMs(partial); 
+    // ex: "12:32"
+    // Exemplo de 2 linhas:
+    // "Último Exercício:\nCardio Caminhada/Bike 10-15min - ⌚12:32"
+    document.getElementById('lastExerciseTime').innerHTML=
+      `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
 
-    // Para o tracker, manter milissegundos ou não? Se quiser manter, use formatTime:
+    document.getElementById('lastExerciseTimeMobile').innerHTML=
+      `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
+
+    // Adiciona no tracker
     exerciseLog.push({
       name:exerciseName,
       timestamp:new Date().toLocaleTimeString(),
@@ -292,8 +288,10 @@ function handleCheck(e){
     });
     addToTracker(exerciseName, partial);
 
+    // Se no tempo do <li> quiser ms, use formatTime:
     const tempoSpan=e.target.parentElement.querySelector('.tempo');
     if(tempoSpan) tempoSpan.textContent=formatTime(partial);
+
     checkFinal();
   } else {
     if(grp==='A') doneA--;
@@ -322,17 +320,21 @@ function checkFinal(){
   }
 }
 function addToTracker(name,msVal){
-  const str=name+" - "+formatTime(msVal);
+  // Nome em bold, tempo normal
+  const timeStr=formatTime(msVal);
+  // ex: <strong>Rosca Biceps</strong> - 03:24.56
+  const strHtml=`<strong>${name}</strong> - ${timeStr}`;
+
   // Desktop
   const dUl=document.getElementById('trackerDesktopList');
   const liD=document.createElement('li');
-  liD.textContent=str; // nome + tempo (com ms se quiser)
+  liD.innerHTML=strHtml;
   dUl.appendChild(liD);
 
   // Mobile
   const mUl=document.getElementById('trackerMobileList');
   const liM=document.createElement('li');
-  liM.textContent=str;
+  liM.innerHTML=strHtml;
   mUl.appendChild(liM);
 
   updateRestDisplay();
@@ -340,17 +342,16 @@ function addToTracker(name,msVal){
 
 /* Exibe tempo final de descanso */
 function updateRestDisplay(){
-  // Se não estiver pausado, restTimer = restTotal
-  document.getElementById('restTimer').innerHTML=
-   `<strong>Descanso</strong><br/><span id="restTimeValue">${formatTime(restTotal)}</span>`;
+  document.getElementById('restTimeValue').textContent=formatTime(restTotal);
   document.getElementById('restTimerMobile').textContent=formatTime(restTotal);
 
+  // Tracker desc
   const dUl=document.getElementById('trackerDesktopList');
   let exD=dUl.querySelector('li[data-descanso="true"]');
   if(exD) exD.remove();
   const liD=document.createElement('li');
   liD.dataset.descanso="true";
-  liD.textContent="Descanso Total - "+formatTime(restTotal);
+  liD.innerHTML="Descanso Total - "+formatTime(restTotal);
   dUl.appendChild(liD);
 
   const mUl=document.getElementById('trackerMobileList');
@@ -358,7 +359,7 @@ function updateRestDisplay(){
   if(exM) exM.remove();
   const liM=document.createElement('li');
   liM.dataset.descanso="true";
-  liM.textContent="Descanso Total - "+formatTime(restTotal);
+  liM.innerHTML="Descanso Total - "+formatTime(restTotal);
   mUl.appendChild(liM);
 }
 
@@ -388,7 +389,7 @@ function exportarCSV(){
   document.body.removeChild(link);
 }
 
-/* ---------- FUNÇÕES AUXILIARES ---------- */
+/* Format time com ms */
 function formatTime(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
@@ -396,8 +397,7 @@ function formatTime(ms){
   const ms2=Math.floor((ms%1000)/10);
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms2).padStart(2,'0')}`;
 }
-
-/* Remove milissegundos p/ “Último Exercício” */
+/* Format time SEM ms - p/ "Ultimo Exercício" */
 function formatTimeNoMs(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
@@ -415,7 +415,7 @@ function fecharLightbox(){
   document.getElementById('lightboxImg').src="";
 }
 
-/* GymRats / Spotify */
+/* GYMRATS / SPOTIFY */
 function abrirGymrats(){
   window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
 }
@@ -423,7 +423,7 @@ function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
 
-/* Abrir Camera */
+/* CAMERA */
 async function abrirCamera(){
   try{
     const st=await navigator.mediaDevices.getUserMedia({video:true});
@@ -433,7 +433,7 @@ async function abrirCamera(){
   }
 }
 
-/* Tracker Desktop / Mobile */
+/* TRACKER Toggles */
 let trackerDesktopVisible=false;
 function toggleTrackerDesktop(){
   trackerDesktopVisible=!trackerDesktopVisible;
@@ -445,7 +445,7 @@ function toggleTrackerMobile(){
   document.getElementById('trackerMobile').style.display=trackerMobileOpen?"block":"none";
 }
 
-/* Confetti (menor e mais rápido) */
+/* CONFETTI */
 function startConfetti(){
   confettiCanvas.width=window.innerWidth;
   confettiCanvas.height=window.innerHeight;
@@ -482,4 +482,12 @@ function stopConfetti(){
   if(ctx){
     ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
   }
+}
+
+/* MODAL CHANGELOG */
+function abrirChangelog(){
+  document.getElementById('modalChangelog').classList.add('show');
+}
+function fecharChangelog(){
+  document.getElementById('modalChangelog').classList.remove('show');
 }
