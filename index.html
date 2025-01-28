@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Treino Monstro</title>
+
+  <!-- Importar CSS externo -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Canvas Confetti (no fundo) -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- HEADER FLUTUANTE -->
+  <header id="mainHeader">
+    <div class="header-title">Treino Monstro</div>
+    <div class="brand-buttons">
+      <!-- Botões GymRats / Spotify (abrindo em nova aba) -->
+      <button class="brand-button" onclick="abrirGymrats()">
+        <img 
+          src="https://play-lh.googleusercontent.com/aVsTwWBG8K1tSmZpuOEL5mNN7kv-F9yCgggmVnsvDCT5teGeYlP3KM0b_OCZPyhGUyw" 
+          alt="Gymrats"/>
+      </button>
+      <button class="brand-button" onclick="abrirSpotify()">
+        <img 
+          src="https://cdn.jim-nielsen.com/ios/512/spotify-music-2015-07-30.png" 
+          alt="Spotify"/>
+      </button>
+    </div>
+  </header>
+
+  <!-- MODAL TROCAR TREINO (quando clica em outro sem pausar) -->
+  <div class="modal-overlay" id="modalTrocarTreino">
+    <div class="modal-content">
+      <h2>Atenção!</h2>
+      <p>Para trocar de Treino, você precisa pausar o treino atual primeiro. Deseja pausar agora?</p>
+      <button onclick="pausarAgora()">Pausar Agora</button>
+      <button onclick="cancelarTrocaTreino()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- MODAL PARABÉNS COM CONFETI (fundo branco glass) -->
+  <div class="modal-congrats" id="modalCongrats">
+    <div class="modal-congrats-content">
+      <h2>Parabéns, treino concluído!</h2>
+      <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
+      <button onclick="fecharCongrats()">Fechar</button>
+      <button onclick="abrirCamera()">Abrir Câmera</button>
+    </div>
+  </div>
+
+  <!-- DIV PRINCIPAL -->
+  <div class="container">
+    <!-- SIDEBAR DESKTOP -->
+    <div class="sidebar">
+      <h2>Controle do Treino</h2>
+
+      <!-- Timers Lado a Lado (Exercício e Descanso) -->
+      <div class="timers-desktop">
+        <!-- Exercício -->
+        <div class="timerBoxContainer">
+          <div class="timerLabel">Exercício</div>
+          <div class="timerValue exercise" id="exerciseTimer">00:00</div>
+        </div>
+
+        <!-- Descanso -->
+        <div class="timerBoxContainer">
+          <div class="timerLabel">Descanso</div>
+          <div class="timerValue rest" id="restTimer">00:00</div>
+        </div>
+      </div>
+
+      <div class="lastLineDesktop" id="lastExerciseTime">Último: 00:00</div>
+
+      <div class="desktop-buttons">
+        <!-- Botão Único (Play/Pause) -->
+        <button class="desktop-btn" id="playPauseBtn">▶ Iniciar</button>
+        <button class="desktop-btn" id="stopBtn">⏹ Encerrar</button>
+        <div class="divider"></div>
+        <button class="desktop-btn" id="trackerDesktopBtn">Tracker</button>
+        <button class="desktop-btn" id="exportDesktopBtn">⬇ Exportar</button>
+      </div>
+
+      <!-- TRACKER DESKTOP (fechado por padrão) -->
+      <div id="trackerDesktop">
+        <h4>Exercícios Concluídos</h4>
+        <ul id="trackerDesktopList"></ul>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT (TREINOS A e B) -->
+    <div class="main-content">
+      <nav>
+        <button onclick="mostrarTreino('treinoA')">Treino A</button>
+        <button onclick="mostrarTreino('treinoB')">Treino B</button>
+      </nav>
+
+      <!-- TREINO A (NÃO REMOVER NADA) -->
+      <section id="treinoA" class="active">
+        <h2>Treino A (Parte Superior)</h2>
+        <div class="objetivo">
+          <p><strong>Objetivo:</strong> Focar em peito, costas, ombros, braços e abdômen.</p>
+          <p><strong>Aquecimento (5-10 min):</strong> Esteira ou bicicleta em ritmo leve.</p>
+        </div>
+
+        <div class="exercicios">
+          <h3>Exercícios Principais (3 séries x 10-12 rep.)</h3>
+          <ul>
+            <!-- 1) Supino Reto -->
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Supino Reto (Peito)">
+              <div class="thumb-container">
+                <img 
+                  src="https://treinomestre.com.br/wp-content/uploads/2023/02/supino-reto-com-halteres-.jpg"
+                  alt="Supino Reto"
+                  data-full="https://treinomestre.com.br/wp-content/uploads/2023/02/supino-reto-com-halteres-.jpg"/>
+              </div>
+              <label>🔥 Supino Reto (Peito)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Remada Baixa (Costas)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static1.minhavida.com.br/articles/b6/3c/18/9c/makatserchykshutterstock-remada-baixa-com-pegada-neutra-orig-1.jpg"
+                  alt="Remada Baixa"
+                  data-full="https://static1.minhavida.com.br/articles/b6/3c/18/9c/makatserchykshutterstock-remada-baixa-com-pegada-neutra-orig-1.jpg"/>
+              </div>
+              <label>🔥 Remada Baixa (Costas)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Desenvolvimento de Ombros">
+              <div class="thumb-container">
+                <img 
+                  src="https://treinomestre.com.br/wp-content/uploads/2018/09/desenvolvimento-com-halteres-.jpg"
+                  alt="Desenvolvimento Ombros"
+                  data-full="https://treinomestre.com.br/wp-content/uploads/2018/09/desenvolvimento-com-halteres-.jpg"/>
+              </div>
+              <label>🔥 Desenvolvimento de Ombros</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Rosca Bíceps">
+              <div class="thumb-container">
+                <img 
+                  src="https://v4excellencefitness.com.br/wp-content/uploads/2023/05/rosca-21s-capa-1024x739.webp"
+                  alt="Rosca Bíceps"
+                  data-full="https://v4excellencefitness.com.br/wp-content/uploads/2023/05/rosca-21s-capa-1024x739.webp"/>
+              </div>
+              <label>🔥 Rosca Bíceps</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Tríceps na Polia">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.wixstatic.com/media/2edbed_92d7d1c87cd440a0b7257df6c438c210~mv2.jpg/v1/fill/w_660,h_330,al_c,q_80,enc_auto/2edbed_92d7d1c87cd440a0b7257df6c438c210~mv2.jpg"
+                  alt="Tríceps Polia"
+                  data-full="https://static.wixstatic.com/media/2edbed_92d7d1c87cd440a0b7257df6c438c210~mv2.jpg/v1/fill/w_660,h_330,al_c,q_80,enc_auto/2edbed_92d7d1c87cd440a0b7257df6c438c210~mv2.jpg"/>
+              </div>
+              <label>🔥 Tríceps na Polia</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="exercicios">
+          <h3>Abdominais (2-3 séries)</h3>
+          <ul>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Abdominal Tradicional (15-20 rep)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.strengthlevel.com/images/exercises/machine-seated-crunch/machine-seated-crunch-800.jpg"
+                  alt="Abdominal Tradicional"
+                  data-full="https://static.strengthlevel.com/images/exercises/machine-seated-crunch/machine-seated-crunch-800.jpg"/>
+              </div>
+              <label>💪 Abdominal Tradicional (15-20 rep)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Prancha (20-30 seg)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"
+                  alt="Prancha"
+                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
+              </div>
+              <label>💪 Prancha (20-30 seg)</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="exercicios">
+          <h3>Cardio (Opcional)</h3>
+          <ul>
+            <li>
+              <input type="checkbox" data-group="A" data-exercise="Cardio Caminhada/Bike 10-15 min">
+              <!-- label sem ficar super pequeno: word-wrap ativado no CSS -->
+              <label>🚶 10-15 min de caminhada ou bike após a musculação (se desejar)</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="observacoes">
+          <p><strong>Observações:</strong></p>
+          <p>- Alongar peito, costas, ombros e braços ao final.</p>
+          <p>- Focar em técnica correta e não exagerar na carga.</p>
+        </div>
+      </section>
+
+      <!-- TREINO B (parte inferior) COMPLETO -->
+      <section id="treinoB">
+        <h2>Treino B (Parte Inferior)</h2>
+        <div class="objetivo">
+          <p><strong>Objetivo:</strong> Pernas, glúteos e abdômen.</p>
+          <p><strong>Aquecimento (5-10 min):</strong> Bicicleta ou elíptico em ritmo leve.</p>
+        </div>
+
+        <div class="exercicios">
+          <h3>Exercícios Principais (3 séries x 10-12 rep.)</h3>
+          <ul>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Agachamento (Livre ou Smith)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.wixstatic.com/media/2edbed_34e498947c0246c897b6b6f722b4f51f~mv2.webp/v1/fill/w_840,h_397,al_c,lg_1,q_80/2edbed_34e498947c0246c897b6b6f722b4f51f~mv2.webp"
+                  alt="Agachamento"
+                  data-full="https://static.wixstatic.com/media/2edbed_34e498947c0246c897b6b6f722b4f51f~mv2.webp/v1/fill/w_840,h_397,al_c,lg_1,q_80/2edbed_34e498947c0246c897b6b6f722b4f51f~mv2.webp"/>
+              </div>
+              <label>🔥 Agachamento (Livre ou Smith)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Leg Press">
+              <div class="thumb-container">
+                <img 
+                  src="https://treinomestre.com.br/wp-content/uploads/2021/12/leg-press-horizontal-para-que-serve-como-fazer.jpg"
+                  alt="Leg Press"
+                  data-full="https://treinomestre.com.br/wp-content/uploads/2021/12/leg-press-horizontal-para-que-serve-como-fazer.jpg"/>
+              </div>
+              <label>🔥 Leg Press</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Afundo (Lunge) com Halteres">
+              <div class="thumb-container">
+                <img 
+                  src="https://treinomestre.com.br/wp-content/uploads/2018/06/exercicio-afundo-.png"
+                  alt="Afundo (Lunge)"
+                  data-full="https://treinomestre.com.br/wp-content/uploads/2018/06/exercicio-afundo-.png"/>
+              </div>
+              <label>🔥 Afundo (Lunge) com Halteres</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Flexão de Pernas (Mesa/Cadeira)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.wixstatic.com/media/2edbed_47dcb3dae84346629508ce6d80946a5a~mv2.webp/v1/fill/w_980,h_515,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_47dcb3dae84346629508ce6d80946a5a~mv2.webp"
+                  alt="Flexão de Pernas"
+                  data-full="https://static.wixstatic.com/media/2edbed_47dcb3dae84346629508ce6d80946a5a~mv2.webp/v1/fill/w_980,h_515,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_47dcb3dae84346629508ce6d80946a5a~mv2.webp"/>
+              </div>
+              <label>🔥 Flexão de Pernas (Mesa/Cadeira)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Panturrilhas (15-20 rep)">
+              <div class="thumb-container">
+                <img 
+                  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-oXB_saDKNmrEOwnBj-B2lCZdQ8yR2awKPOmyS-_Qv1MaEmGbGSc4wnQa7gy1VxQf2k-ueKCeN4cr1DoasF-lLpoJKfkj7vxnWCRB3oYxBInQTxervwwhKfL_FWieW6TrjatsPvYPwHc/s1600/calf-raise-on-leg-press.jpg"
+                  alt="Panturrilhas"
+                  data-full="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh-oXB_saDKNmrEOwnBj-B2lCZdQ8yR2awKPOmyS-_Qv1MaEmGbGSc4wnQa7gy1VxQf2k-ueKCeN4cr1DoasF-lLpoJKfkj7vxnWCRB3oYxBInQTxervwwhKfL_FWieW6TrjatsPvYPwHc/s1600/calf-raise-on-leg-press.jpg"/>
+              </div>
+              <label>🔥 Panturrilhas (15-20 rep)</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="exercicios">
+          <h3>Abdominais (2-3 séries)</h3>
+          <ul>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Abdominal (pode variar com oblíquos)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static1.minhavida.com.br/articles/7c/f8/7c/06/abdominal-em-barras-paralelas-orig-1.jpg"
+                  alt="Abdominal Inferior"
+                  data-full="https://static1.minhavida.com.br/articles/7c/f8/7c/06/abdominal-em-barras-paralelas-orig-1.jpg"/>
+              </div>
+              <label>💪 Abdominal (pode variar com oblíquos)</label>
+              <span class="tempo"></span>
+            </li>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Prancha (20-30 seg)">
+              <div class="thumb-container">
+                <img 
+                  src="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"
+                  alt="Prancha"
+                  data-full="https://static.wixstatic.com/media/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg/v1/fill/w_980,h_551,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/2edbed_3acf4c49102b454b8f21a977d42faa1c~mv2.jpg"/>
+              </div>
+              <label>💪 Prancha (20-30 seg)</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="exercicios">
+          <h3>Cardio (Opcional)</h3>
+          <ul>
+            <li>
+              <input type="checkbox" data-group="B" data-exercise="Cardio Bike ou Esteira (10-15 min)">
+              <label>🚴 10-15 min de bike ou esteira após a musculação</label>
+              <span class="tempo"></span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="observacoes">
+          <p><strong>Observações:</strong></p>
+          <p>- Alongar quadríceps, posterior de coxa, glúteos e lombar ao final.</p>
+          <p>- Ajustar carga progressivamente e manter boa postura.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 - Seu Nome ou Academia. Bons treinos!</p>
+  </footer>
+
+  <!-- BOTTOM BAR (MOBILE) -->
+  <div class="bottom-bar" id="mobileBar">
+    <div class="timers-mobile">
+      <!-- Exercício -->
+      <div class="timerBoxMobile">
+        <div class="timerLabelMobile">Exercício</div>
+        <div class="timerValueMobile exercise" id="exerciseTimerMobile">00:00</div>
+      </div>
+      <!-- Descanso -->
+      <div class="timerBoxMobile">
+        <div class="timerLabelMobile">Descanso</div>
+        <div class="timerValueMobile rest" id="restTimerMobile">00:00</div>
+      </div>
+    </div>
+
+    <div class="lastLineMobile" id="lastExerciseTimeMobile">Último: 00:00</div>
+
+    <div class="mobile-row">
+      <button class="mobile-btn" id="playPauseBtnMobile">▶ Iniciar</button>
+      <button class="mobile-btn" id="stopBtnMobile">⏹ Encerrar</button>
+    </div>
+
+    <div class="mobile-row">
+      <button class="mobile-btn" id="trackerToggleBtn">Tracker</button>
+      <button class="mobile-btn" id="exportBtnMobile">Exportar</button>
+    </div>
+
+    <!-- Tracker Mobile (fechado por padrão) -->
+    <div class="tracker-mobile" id="trackerMobile" style="display:none;">
+      <ul id="trackerMobileList"></ul>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="close-btn" onclick="fecharLightbox()">X</button>
+    <img id="lightboxImg" src="" alt="Exercício"/>
+  </div>
+
+  <!-- Importar script.js -->
+  <script src="script.js"></script>
+</body>
+</html>
