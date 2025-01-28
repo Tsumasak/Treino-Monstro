@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Treino Monstro</title>
 
-  <!-- Importar CSS externo -->
+  <!-- CSS externo -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <!-- Canvas Confetti (no fundo) -->
+  <!-- Canvas Confetti (fundo) -->
   <canvas id="confettiCanvas"></canvas>
 
   <!-- HEADER FLUTUANTE -->
   <header id="mainHeader">
     <div class="header-title">Treino Monstro</div>
     <div class="brand-buttons">
-      <!-- Botões GymRats / Spotify (abrindo em nova aba) -->
+      <!-- Botões GymRats / Spotify (abrem nova aba) -->
       <button class="brand-button" onclick="abrirGymrats()">
         <img 
           src="https://play-lh.googleusercontent.com/aVsTwWBG8K1tSmZpuOEL5mNN7kv-F9yCgggmVnsvDCT5teGeYlP3KM0b_OCZPyhGUyw" 
@@ -32,7 +32,7 @@
     </div>
   </header>
 
-  <!-- MODAL TROCAR TREINO (quando clica em outro sem pausar) -->
+  <!-- MODAL TROCAR TREINO -->
   <div class="modal-overlay" id="modalTrocarTreino">
     <div class="modal-content">
       <h2>Atenção!</h2>
@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <!-- MODAL PARABÉNS COM CONFETI (fundo branco glass) -->
+  <!-- MODAL PARABÉNS (Fundo branco+glass+confetes) -->
   <div class="modal-congrats" id="modalCongrats">
     <div class="modal-congrats-content">
       <h2>Parabéns, treino concluído!</h2>
@@ -52,53 +52,57 @@
     </div>
   </div>
 
-  <!-- DIV PRINCIPAL -->
   <div class="container">
-    <!-- SIDEBAR DESKTOP -->
+    <!-- SIDEBAR (DESKTOP) -->
     <div class="sidebar">
       <h2>Controle do Treino</h2>
 
-      <!-- Timers Lado a Lado (Exercício e Descanso) -->
+      <!-- Timers Desktop: Exercício e Descanso Lado a Lado -->
       <div class="timers-desktop">
-        <!-- Exercício -->
         <div class="timerBoxContainer">
-          <div class="timerLabel">Exercício</div>
-          <div class="timerValue exercise" id="exerciseTimer">00:00</div>
+          <div class="timerValue exercise" id="exerciseTimer">
+            <strong>Exercício</strong><br/>
+            <span id="exerciseTimeValue">00:00</span>
+          </div>
         </div>
-
-        <!-- Descanso -->
         <div class="timerBoxContainer">
-          <div class="timerLabel">Descanso</div>
-          <div class="timerValue rest" id="restTimer">00:00</div>
+          <div class="timerValue rest" id="restTimer">
+            <strong>Descanso</strong><br/>
+            <span id="restTimeValue">00:00</span>
+          </div>
         </div>
       </div>
 
-      <div class="lastLineDesktop" id="lastExerciseTime">Último: 00:00</div>
+      <!-- Último Exercício -->
+      <div class="lastLineDesktop" id="lastExerciseTime">Último Exercício: --</div>
 
       <div class="desktop-buttons">
         <!-- Botão Único (Play/Pause) -->
         <button class="desktop-btn" id="playPauseBtn">▶ Iniciar</button>
+        <!-- Botão Stop -->
         <button class="desktop-btn" id="stopBtn">⏹ Encerrar</button>
+
         <div class="divider"></div>
         <button class="desktop-btn" id="trackerDesktopBtn">Tracker</button>
         <button class="desktop-btn" id="exportDesktopBtn">⬇ Exportar</button>
       </div>
 
-      <!-- TRACKER DESKTOP (fechado por padrão) -->
+      <!-- TRACKER DESKTOP -->
       <div id="trackerDesktop">
         <h4>Exercícios Concluídos</h4>
         <ul id="trackerDesktopList"></ul>
       </div>
     </div>
 
-    <!-- MAIN CONTENT (TREINOS A e B) -->
+    <!-- MAIN CONTENT (TREINOS) -->
     <div class="main-content">
       <nav>
-        <button onclick="mostrarTreino('treinoA')">Treino A</button>
+        <!-- Treino A ativo por padrão -->
+        <button onclick="mostrarTreino('treinoA')" class="activeBtn">Treino A</button>
         <button onclick="mostrarTreino('treinoB')">Treino B</button>
       </nav>
 
-      <!-- TREINO A (NÃO REMOVER NADA) -->
+      <!-- TREINO A (Parte Superior) -->
       <section id="treinoA" class="active">
         <h2>Treino A (Parte Superior)</h2>
         <div class="objetivo">
@@ -109,7 +113,7 @@
         <div class="exercicios">
           <h3>Exercícios Principais (3 séries x 10-12 rep.)</h3>
           <ul>
-            <!-- 1) Supino Reto -->
+            <!-- 1) Supino Reto (Peito) -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Supino Reto (Peito)">
               <div class="thumb-container">
@@ -121,6 +125,7 @@
               <label>🔥 Supino Reto (Peito)</label>
               <span class="tempo"></span>
             </li>
+            <!-- 2) Remada Baixa (Costas) -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Remada Baixa (Costas)">
               <div class="thumb-container">
@@ -132,6 +137,7 @@
               <label>🔥 Remada Baixa (Costas)</label>
               <span class="tempo"></span>
             </li>
+            <!-- 3) Desenvolvimento de Ombros -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Desenvolvimento de Ombros">
               <div class="thumb-container">
@@ -143,6 +149,7 @@
               <label>🔥 Desenvolvimento de Ombros</label>
               <span class="tempo"></span>
             </li>
+            <!-- 4) Rosca Bíceps -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Rosca Bíceps">
               <div class="thumb-container">
@@ -154,6 +161,7 @@
               <label>🔥 Rosca Bíceps</label>
               <span class="tempo"></span>
             </li>
+            <!-- 5) Tríceps na Polia -->
             <li>
               <input type="checkbox" data-group="A" data-exercise="Tríceps na Polia">
               <div class="thumb-container">
@@ -202,9 +210,9 @@
             <li>
               <input type="checkbox" data-group="A" data-exercise="Cardio Caminhada/Bike 10-15 min">
               <div class="thumb-container">
-                <img 
+                <img
                   src="https://treinomestre.com.br/wp-content/uploads/2023/10/melhores-aerobicos-para-perder-calorias-.jpg"
-                  alt="Bike ou Esteira"
+                  alt="Cardio A"
                   data-full="https://treinomestre.com.br/wp-content/uploads/2023/10/melhores-aerobicos-para-perder-calorias-.jpg"/>
               </div>
               <label>🚶 10-15 min de caminhada ou bike após a musculação (se desejar)</label>
@@ -220,7 +228,7 @@
         </div>
       </section>
 
-      <!-- TREINO B (parte inferior) COMPLETO -->
+      <!-- TREINO B (Parte Inferior) -->
       <section id="treinoB">
         <h2>Treino B (Parte Inferior)</h2>
         <div class="objetivo">
@@ -321,14 +329,14 @@
           <h3>Cardio (Opcional)</h3>
           <ul>
             <li>
-              <input type="checkbox" data-group="A" data-exercise="Cardio Caminhada/Bike 10-15 min">
+              <input type="checkbox" data-group="B" data-exercise="Cardio Bike ou Esteira (10-15 min)">
               <div class="thumb-container">
-                <img 
+                <img
                   src="https://treinomestre.com.br/wp-content/uploads/2023/10/melhores-aerobicos-para-perder-calorias-.jpg"
-                  alt="Bike ou Esteira"
+                  alt="Cardio B"
                   data-full="https://treinomestre.com.br/wp-content/uploads/2023/10/melhores-aerobicos-para-perder-calorias-.jpg"/>
               </div>
-              <label>🚶 10-15 min de caminhada ou bike após a musculação (se desejar)</label>
+              <label>🚴 10-15 min de bike ou esteira após a musculação</label>
               <span class="tempo"></span>
             </li>
           </ul>
@@ -350,23 +358,21 @@
   <!-- BOTTOM BAR (MOBILE) -->
   <div class="bottom-bar" id="mobileBar">
     <div class="timers-mobile">
-      <!-- Exercício -->
       <div class="timerBoxMobile">
         <div class="timerLabelMobile">Exercício</div>
         <div class="timerValueMobile exercise" id="exerciseTimerMobile">00:00</div>
       </div>
-      <!-- Descanso -->
       <div class="timerBoxMobile">
         <div class="timerLabelMobile">Descanso</div>
         <div class="timerValueMobile rest" id="restTimerMobile">00:00</div>
       </div>
     </div>
-
-    <div class="lastLineMobile" id="lastExerciseTimeMobile">Último: 00:00</div>
+    <div class="lastLineMobile" id="lastExerciseTimeMobile">Último Exercício: --</div>
 
     <div class="mobile-row">
-      <button class="mobile-btn" id="playPauseBtnMobile">▶ Iniciar</button>
-      <button class="mobile-btn" id="stopBtnMobile">⏹ Encerrar</button>
+      <!-- Somente ícone no mobile -->
+      <button class="mobile-btn" id="playPauseBtnMobile">▶</button>
+      <button class="mobile-btn" id="stopBtnMobile">⏹</button>
     </div>
 
     <div class="mobile-row">
@@ -374,7 +380,7 @@
       <button class="mobile-btn" id="exportBtnMobile">Exportar</button>
     </div>
 
-    <!-- Tracker Mobile (fechado por padrão) -->
+    <!-- Tracker Mobile (fechado) -->
     <div class="tracker-mobile" id="trackerMobile" style="display:none;">
       <ul id="trackerMobileList"></ul>
     </div>
@@ -386,7 +392,7 @@
     <img id="lightboxImg" src="" alt="Exercício"/>
   </div>
 
-  <!-- Importar script.js -->
+  <!-- Script JS externo -->
   <script src="script.js"></script>
 </body>
 </html>

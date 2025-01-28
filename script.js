@@ -1,20 +1,19 @@
-/* ======================================
-   script.js
-   Explicação:
-   - Lida com toda a lógica do countdown,
-   - Botões Play/Pause (um único),
-   - Exercício e Descanso simultâneos,
-   - Tracker,
-   - Confetti,
-   - Lightbox, etc.
-====================================== */
+/* 
+  script.js
+  - Lógica do countdown com fundo branco + glass
+  - Botão Play/Pause (troca “▶” e “⏸”)
+  - Contador Exercício e Descanso com intervalEx e intervalRest
+  - “Último Exercício” sem milissegundos
+  - Confetti menor e mais rápido
+  - Tracker com nomes em bold
+*/
 
 let treinoIniciado=false, treinoEncerrado=false, paused=false;
 let accumulatedTime=0; // Exercício
 let startPauseTime=0;
 let lastCheckTime=0;
-let intervalEx=null;  // setInterval do Exercicio
-let intervalRest=null; // setInterval do Descanso
+let intervalEx=null;   // Interval do exercicio
+let intervalRest=null; // Interval do descanso
 
 let totalA=0, doneA=0, totalB=0, doneB=0;
 
@@ -32,19 +31,19 @@ let confettiPieces=[];
 let confettiTimer=null;
 
 // Countdown
-let firstStart=true; 
-let countdownOverlay=null; 
-let countdownDiv=null; 
-let countdownVal=5; 
+let firstStart=true;
+let countdownOverlay=null;
+let countdownDiv=null;
+let countdownVal=5;
 let countdownInterval=null;
 
-// Ao carregar...
-window.addEventListener('DOMContentLoaded', ()=>{
+window.addEventListener('DOMContentLoaded',()=>{
   // Contar checkboxes
   document.querySelectorAll('input[type="checkbox"]').forEach(ch=>{
-    if(ch.dataset.group==='A') totalA++;
-    if(ch.dataset.group==='B') totalB++;
-    ch.disabled=true;  // só habilita quando iniciar
+    const grp=ch.dataset.group;
+    if(grp==='A') totalA++;
+    if(grp==='B') totalB++;
+    ch.disabled=true; 
     ch.addEventListener('change', handleCheck);
   });
 
@@ -63,6 +62,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   // Lightbox
   const lb=document.getElementById('lightbox');
   lb.addEventListener('click',(e)=>{ if(e.target===lb) fecharLightbox(); });
+
   document.querySelectorAll('.thumb-container img').forEach(img=>{
     img.addEventListener('click',()=>{
       document.getElementById('lightboxImg').src=img.dataset.full;
@@ -70,7 +70,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     });
   });
 
-  // Hide header on scroll
+  // Header hide on scroll
   let lastScrollTop=0;
   window.addEventListener('scroll',()=>{
     const st=window.pageYOffset||document.documentElement.scrollTop;
@@ -89,14 +89,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
   confettiCanvas.height=window.innerHeight;
   ctx=confettiCanvas.getContext('2d');
 
-  // Countdown overlay
+  // Countdown overlay c/ glass e fundo branco
   countdownOverlay=document.createElement('div');
   countdownOverlay.style.position='fixed';
   countdownOverlay.style.top='0'; 
   countdownOverlay.style.left='0'; 
   countdownOverlay.style.width='100%'; 
   countdownOverlay.style.height='100%';
-  countdownOverlay.style.backgroundColor='rgba(255,255,255,0.4)';
+  countdownOverlay.style.background='rgba(255,255,255,0.4)';
   countdownOverlay.style.backdropFilter='blur(8px)';
   countdownOverlay.style.zIndex='100000';
   countdownOverlay.style.display='none'; 
@@ -107,17 +107,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
   countdownDiv=document.createElement('div');
   countdownDiv.style.fontFamily="'Russo One',sans-serif";
   countdownDiv.style.fontSize='3rem';
+  countdownDiv.style.fontWeight='bold';
   countdownDiv.style.color='red';
   countdownOverlay.appendChild(countdownDiv);
 });
 
-/* -------------------------
-   FUNÇÕES PLAY/PAUSE/STOP
-------------------------- */
+/* ---------- FUNÇÕES PLAY/PAUSE/STOP ---------- */
 function togglePlayPause(){
-  if(treinoEncerrado) return;
+  if(treinoEncerrado)return;
   if(!treinoIniciado){
-    // Primeira vez
+    // primeira vez
     if(firstStart){
       firstStart=false;
       showCountdown();
@@ -125,12 +124,12 @@ function togglePlayPause(){
       iniciarExercicio();
     }
   } else {
-    // Já iniciou
+    // já iniciou
     if(!paused){
-      // Pausar
+      // pausar
       pausarTreino();
     } else {
-      // Retomar
+      // retomar
       iniciarExercicio();
     }
   }
@@ -163,15 +162,16 @@ function iniciarExercicio(){
   paused=false;
   startPauseTime=Date.now();
 
-  // Interval do exercício
+  // Interval do exercicio
   if(intervalEx) clearInterval(intervalEx);
   intervalEx=setInterval(()=>{
     const elapsed=accumulatedTime+(Date.now()-startPauseTime);
-    document.getElementById('exerciseTimer').textContent=formatTime(elapsed);
-    document.getElementById('exerciseTimerMobile').textContent=formatTime(elapsed);
+    document.getElementById('exerciseTimer').innerHTML=`<strong>Exercício</strong><br/><span id="exerciseTimeValue">${formatTime(elapsed)}</span>`;
+    document.getElementById('exerciseTimerMobile').textContent= formatTime(elapsed); 
+    // (ou se quiser tb com strong no mobile)
   },50);
 
-  // Se estava descansando, paramos
+  // se estava descansando
   if(restRunning){
     restRunning=false;
     if(intervalRest) clearInterval(intervalRest);
@@ -181,13 +181,13 @@ function iniciarExercicio(){
 
   setCheckBoxesDisabled(false);
 
-  // Botão vira Pausar
+  // Botão vira “⏸ Pausar” no desktop e “⏸” no mobile
   document.getElementById('playPauseBtn').textContent="⏸ Pausar";
-  document.getElementById('playPauseBtnMobile').textContent="⏸ Pausar";
+  document.getElementById('playPauseBtnMobile').textContent="⏸";
 }
 
 function pausarTreino(){
-  if(!treinoIniciado||treinoEncerrado||paused) return;
+  if(!treinoIniciado||treinoEncerrado||paused)return;
   paused=true;
   accumulatedTime+=(Date.now()-startPauseTime);
   if(intervalEx) clearInterval(intervalEx);
@@ -195,29 +195,31 @@ function pausarTreino(){
 
   setCheckBoxesDisabled(true);
 
-  // Inicia Descanso
+  // Inicia descanso
   restRunning=true;
   restStart=Date.now();
   if(intervalRest) clearInterval(intervalRest);
   intervalRest=setInterval(()=>{
     const r=restTotal+(Date.now()-restStart);
-    document.getElementById('restTimer').textContent=formatTime(r);
+    document.getElementById('restTimer').innerHTML=`<strong>Descanso</strong><br/><span id="restTimeValue">${formatTime(r)}</span>`;
     document.getElementById('restTimerMobile').textContent=formatTime(r);
   },50);
 
-  // Botão vira Retomar
+  // Botão vira “▶ Retomar” no desktop e “▶” no mobile
   document.getElementById('playPauseBtn').textContent="▶ Retomar";
-  document.getElementById('playPauseBtnMobile').textContent="▶ Retomar";
+  document.getElementById('playPauseBtnMobile').textContent="▶";
 }
 
 function encerrarTreino(){
   if(!treinoIniciado||treinoEncerrado)return;
   if(!paused){
     accumulatedTime+=(Date.now()-startPauseTime);
-    if(intervalEx) clearInterval(intervalEx);
+    if(intervalEx)clearInterval(intervalEx);
     intervalEx=null;
   }
-  treinoEncerrado=true; paused=true;
+  treinoEncerrado=true;
+  paused=true;
+
   if(restRunning){
     restRunning=false;
     if(intervalRest) clearInterval(intervalRest);
@@ -234,9 +236,7 @@ function fecharCongrats(){
   stopConfetti();
 }
 
-/* -------------------------
-   TROCAR TREINO
-------------------------- */
+/* ---------- TROCAR TREINO ---------- */
 function mostrarTreino(id){
   if(treinoIniciado && !paused && !treinoEncerrado){
     trocarTreinoId=id;
@@ -258,13 +258,11 @@ function cancelarTrocaTreino(){
   trocarTreinoId=null;
 }
 function doChangeTreino(id){
-  document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-/* -------------------------
-   CHECK/ TRACKER
-------------------------- */
+/* ---------- CHECKBOXES / TRACKER ---------- */
 function handleCheck(e){
   if(!treinoIniciado||paused||treinoEncerrado){
     e.target.checked=!e.target.checked;
@@ -274,22 +272,28 @@ function handleCheck(e){
   const grp=e.target.dataset.group;
   if(e.target.checked){
     if(grp==='A') doneA++; else if(grp==='B') doneB++;
+
+    // Remover milissegundos p/ “último exercício”
     const partial=(accumulatedTime+(Date.now()-startPauseTime))-lastCheckTime;
     lastCheckTime=accumulatedTime+(Date.now()-startPauseTime);
-    const str=formatTime(partial);
-    document.getElementById('lastExerciseTime').textContent="Último: "+str;
-    document.getElementById('lastExerciseTimeMobile').textContent="Último: "+str;
 
+    const exerciseName=e.target.dataset.exercise; // ex: "Remada Baixa (Costas)"
+    const strNoMs=formatTimeNoMs(partial); // remover milissegundos
+    document.getElementById('lastExerciseTime').textContent=
+      `Último Exercício: ${exerciseName} -> ${strNoMs}`;
+    document.getElementById('lastExerciseTimeMobile').textContent=
+      `Último Exercício: ${exerciseName} -> ${strNoMs}`;
+
+    // Para o tracker, manter milissegundos ou não? Se quiser manter, use formatTime:
     exerciseLog.push({
-      name:e.target.dataset.exercise,
+      name:exerciseName,
       timestamp:new Date().toLocaleTimeString(),
       delta:partial
     });
-    addToTracker(e.target.dataset.exercise, partial);
+    addToTracker(exerciseName, partial);
 
     const tempoSpan=e.target.parentElement.querySelector('.tempo');
-    if(tempoSpan) tempoSpan.textContent=str;
-
+    if(tempoSpan) tempoSpan.textContent=formatTime(partial);
     checkFinal();
   } else {
     if(grp==='A') doneA--;
@@ -322,8 +326,9 @@ function addToTracker(name,msVal){
   // Desktop
   const dUl=document.getElementById('trackerDesktopList');
   const liD=document.createElement('li');
-  liD.textContent=str;
+  liD.textContent=str; // nome + tempo (com ms se quiser)
   dUl.appendChild(liD);
+
   // Mobile
   const mUl=document.getElementById('trackerMobileList');
   const liM=document.createElement('li');
@@ -333,9 +338,11 @@ function addToTracker(name,msVal){
   updateRestDisplay();
 }
 
-/* Exibe o tempo final de descanso no tracker */
+/* Exibe tempo final de descanso */
 function updateRestDisplay(){
-  document.getElementById('restTimer').textContent=formatTime(restTotal);
+  // Se não estiver pausado, restTimer = restTotal
+  document.getElementById('restTimer').innerHTML=
+   `<strong>Descanso</strong><br/><span id="restTimeValue">${formatTime(restTotal)}</span>`;
   document.getElementById('restTimerMobile').textContent=formatTime(restTotal);
 
   const dUl=document.getElementById('trackerDesktopList');
@@ -355,9 +362,7 @@ function updateRestDisplay(){
   mUl.appendChild(liM);
 }
 
-/* -------------------------
-   EXPORT CSV
-------------------------- */
+/* ---------- EXPORT CSV ---------- */
 function exportarCSV(){
   if(!treinoIniciado){
     alert("Você não iniciou o treino ainda!");
@@ -383,9 +388,7 @@ function exportarCSV(){
   document.body.removeChild(link);
 }
 
-/* -------------------------
-   AUX
-------------------------- */
+/* ---------- FUNÇÕES AUXILIARES ---------- */
 function formatTime(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
@@ -393,6 +396,15 @@ function formatTime(ms){
   const ms2=Math.floor((ms%1000)/10);
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms2).padStart(2,'0')}`;
 }
+
+/* Remove milissegundos p/ “Último Exercício” */
+function formatTimeNoMs(ms){
+  const totalSec=Math.floor(ms/1000);
+  const m=Math.floor(totalSec/60);
+  const s=totalSec%60;
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
 function setCheckBoxesDisabled(disabled){
   document.querySelectorAll('input[type="checkbox"]').forEach(ch=>{
     if(!ch.checked) ch.disabled=disabled;
@@ -403,25 +415,25 @@ function fecharLightbox(){
   document.getElementById('lightboxImg').src="";
 }
 
-/* GymRats/Spotify */
-function abrirGymrats(){ 
+/* GymRats / Spotify */
+function abrirGymrats(){
   window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
 }
 function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
 
-/* getUserMedia */
+/* Abrir Camera */
 async function abrirCamera(){
   try{
     const st=await navigator.mediaDevices.getUserMedia({video:true});
     alert("Câmera do navegador ativada!");
   } catch(e){
-    alert("Não foi possível acessar a câmera: "+e);
+    alert("Não foi possível acessar a câmera: "+ e);
   }
 }
 
-/* Tracker Toggles */
+/* Tracker Desktop / Mobile */
 let trackerDesktopVisible=false;
 function toggleTrackerDesktop(){
   trackerDesktopVisible=!trackerDesktopVisible;
@@ -433,7 +445,7 @@ function toggleTrackerMobile(){
   document.getElementById('trackerMobile').style.display=trackerMobileOpen?"block":"none";
 }
 
-/* CONFETTI (menor e mais rápido) */
+/* Confetti (menor e mais rápido) */
 function startConfetti(){
   confettiCanvas.width=window.innerWidth;
   confettiCanvas.height=window.innerHeight;
