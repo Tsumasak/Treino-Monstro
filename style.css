@@ -1,10 +1,11 @@
 /* ======================
    style.css
-   - Ajustado texts (Exercício/Descanso) => 12px
-   - "Treino A" sem cor de fundo estranha
-   - Tracker => somente nome em bold, tempo normal
-   - Modal confetes => fundo branco + glass
-   - Menos espaço no mobile top
+   Atualizado para v1.3.0:
+   - Borda cinza nos botões
+   - Botões modais com round-btn
+   - Timer Desktop igual ao Mobile
+   - Espaço maior entre .exercicios
+   - Fundo desfocado na modal de Parabéns
 ====================== */
 
 * {
@@ -42,6 +43,11 @@ header {
 .header-title {
   font-weight:600; font-size:1.2rem; color:#333;
 }
+.header-version {
+  font-size: 0.8rem;
+  color: #999;
+  margin-left: 0.5rem;
+}
 .brand-buttons {
   display:flex; gap:0.5rem;
 }
@@ -55,6 +61,33 @@ header {
 }
 .brand-button:hover {
   transform:scale(1.05);
+}
+
+/* Borda cinza clara em todos os botões */
+nav button,
+.desktop-btn,
+.mobile-btn,
+.brand-button,
+.round-btn {
+  border: 1px solid #ddd !important;
+}
+
+/* Botão Round (usado nas modais p/ padrão Treino A/B) */
+.round-btn {
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  margin: 0.5rem 0;
+}
+.round-btn:hover {
+  background:rgba(255,255,255,0.7);
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  transform:scale(1.03);
 }
 
 /* CONTAINER */
@@ -75,18 +108,25 @@ header {
   margin-bottom:1rem; color:#333;
 }
 
-/* Timers Desktop */
+/* Timers Desktop com label e valor */
 .timers-desktop {
   display:flex; justify-content:center; align-items:center;
-  gap:24px; /* spacing */
+  gap:24px;
   margin-bottom:1rem;
 }
 .timerBoxContainer {
   display:flex; flex-direction:column; align-items:center;
 }
+.timerLabelDesktop {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 2px;
+  font-weight: bold;
+  text-align: center;
+}
 .timerValue {
   font-family:'Russo One',sans-serif;
-  font-size:1.8rem; 
+  font-size:1.5rem; /* aproximado ao mobile */
   font-weight:bold; 
   background:rgba(255,255,255,0.6);
   border:1px solid rgba(0,0,0,0.1);
@@ -111,11 +151,10 @@ header {
 }
 .desktop-btn {
   background:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.3);
+  backdrop-filter:blur(6px);
   border-radius:20px;
   padding:0.8rem 1rem;
   cursor:pointer; font-size:1rem; color:#333;
-  backdrop-filter:blur(6px);
   transition:background 0.3s,transform 0.2s,box-shadow 0.2s;
   display:flex; justify-content:center; align-items:center;
 }
@@ -138,7 +177,6 @@ nav {
 }
 nav button {
   background:rgba(255,255,255,0.4); backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,0.2);
   border-radius:20px; padding:0.5rem 1rem;
   cursor:pointer; font-size:1rem; font-weight:500;
   transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
@@ -149,7 +187,6 @@ nav button:hover {
   transform:scale(1.03);
 }
 .activeBtn {
-  /* Treino A ativo, mas sem cor estranha => pode ficar sem cor ou bem sutil */
   background:rgba(255,255,255,0.4); 
 }
 
@@ -170,6 +207,9 @@ section h2 { margin-bottom:1rem; color:#333; }
   background:rgba(255,255,255,0.2);
   border-radius:12px; border-left:5px solid #ff00ff33;
   padding:1rem; margin-bottom:1rem;
+}
+.exercicios {
+  margin-bottom: 2rem; /* Aumentei para mais espaço */
 }
 .exercicios h3 {
   margin-bottom:0.5rem; color:#444; font-weight:600;
@@ -212,9 +252,7 @@ label {
   padding:1rem; margin-top:1rem; color:#333;
 }
 
-/* TRACKER DESKTOP -> somente nome do exercício em bold, tempo normal
-   => implementado no script (tag <strong> no nome, normal p/ tempo)
-*/
+/* TRACKER DESKTOP -> nome em bold, tempo normal */
 #trackerDesktop {
   width:100%; margin-top:1rem;
   background:rgba(255,255,255,0.2);
@@ -277,11 +315,10 @@ label {
 }
 .mobile-btn {
   background:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.3);
+  backdrop-filter:blur(6px);
   border-radius:20px;
   padding:0.4rem 0.8rem; 
   cursor:pointer; font-size:1rem; color:#333;
-  backdrop-filter:blur(6px);
   transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
 }
 .mobile-btn:hover {
@@ -290,9 +327,7 @@ label {
   transform:scale(1.05);
 }
 
-/* Tracker Mobile -> somente nome em bold; tempo normal
-   => script vai injetar <strong> para nome, normal p/ tempo
-*/
+/* Tracker Mobile -> nome em bold; tempo normal */
 .tracker-mobile {
   background:rgba(255,255,255,0.2);
   backdrop-filter:blur(4px);
@@ -350,6 +385,9 @@ label {
   position:fixed; top:0; left:0; width:100%; height:100%;
   display:none; justify-content:center; align-items:center;
   z-index:99999;
+  /* Fundo desfocado */
+  background: rgba(255,255,255,0.4);
+  backdrop-filter: blur(8px);
 }
 .modal-congrats.show { display:flex; }
 .modal-congrats-content {
@@ -362,12 +400,7 @@ label {
 }
 .modal-congrats-content h2 { margin-bottom:1rem; }
 .modal-congrats-content button {
-  background:#444; color:#fff; border:none; border-radius:8px;
-  padding:0.6rem 1.2rem; margin:0.5rem; cursor:pointer;
-  transition:background 0.2s,transform 0.2s;
-}
-.modal-congrats-content button:hover {
-  background:#666; transform:scale(1.05);
+  /* Retirados styles inline, usando .round-btn no HTML */
 }
 
 /* FOOTER */
@@ -383,7 +416,7 @@ footer {
 @media(max-width:768px){
   .container {
     flex-direction:column;
-    margin-top:80px; /* Diminuído */
+    margin-top:80px;
   }
   .sidebar{ display:none; }
   .main-content{ padding-bottom:14rem; }

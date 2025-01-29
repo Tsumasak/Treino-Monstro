@@ -1,6 +1,6 @@
 # Treino Monstro
 
-> **Versão Atual**: 1.3.0
+> **Versão Atual**: 1.2.3
 
 Este projeto é um site de **Treino A/B** com **contadores** de Exercício e Descanso, 
 um **tracker** de exercícios, e outras funcionalidades.
@@ -33,14 +33,14 @@ um **tracker** de exercícios, e outras funcionalidades.
   - Botão “Exportar” dentro da modal para facilitar ao final do treino.
 
 - **Changelog**:  
-  - Botão “Changelog” no header.  
-  - Abre uma modal contendo as versões e mudanças, sincronizadas com este README.
+  - Botão “Changelog” ao lado esquerdo do GymRats.  
+  - Abre uma modal contendo as versões e mudanças.
 
 - **Lightbox**:  
   - Ao clicar nas imagens dos exercícios, abre um lightbox ampliado.
 
-- **Layout responsivo**:  
-  - Sidebar no desktop, bottom bar no mobile, com glassmorphism.
+- **Layout** responsivo**:  
+  - Sidebar no desktop, bottom bar no mobile, com suposições de estilo Notion + glassmorphism.
 
 ---
 
@@ -67,17 +67,6 @@ um **tracker** de exercícios, e outras funcionalidades.
 - Botão “Changelog” no header
 - Ajustes no tamanho de fonte para “Exercício” e “Descanso” (12px)
 
-### Versão 1.3.0
-- Favicon e thumbnail para redes sociais
-- Botões das modais no mesmo padrão dos botões “Treino A/B”
-- “Último Exercício” em bold
-- Pequena borda cinza nos botões
-- Layout do Desktop igual ao Mobile nos textos
-- Confirmação no botão “Encerrar”
-- Fundo desfocado na modal de Parabéns
-- Nova lógica do botão Gymrats
-- Etc.
-
 ---
 
 ## Como Usar
@@ -89,7 +78,6 @@ um **tracker** de exercícios, e outras funcionalidades.
 5. Pode **Exportar** CSV para salvar o histórico.
 6. Caso queira pausar e trocar de treino, o site pede para pausar antes.
 7. **Lightbox** nas imagens, **Tracker** com marcação de tempo de cada exercício + Descanso total.
-8. **Gymrats** com detecção de plataforma e redirecionamento para app nativo ou loja.
 
 ---
 
@@ -102,4 +90,4 @@ um **tracker** de exercícios, e outras funcionalidades.
 
 ## Licença
 
-Este projeto é livre para uso em academias, treinos pessoais etc.
+Este projeto é livre para uso em academias, treinos pessoais etc. 

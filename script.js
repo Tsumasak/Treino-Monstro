@@ -1,12 +1,10 @@
 /* 
   script.js
-  - Exercicio e Descanso: com intervals
-  - Botões mobile só ícones
-  - Último Exercício => 2 linhas
-  - Tracker => nome bold, tempo normal (injetado no DOM)
-  - Modal confetes com fundo glass
-  - Novo btn Exportar na modal parabéns
-  - Changelog modal
+  v1.3.0
+  - Lógica do abrirGymrats() (User-Agent + fallback)
+  - Confirmação no botão STOP
+  - Abrir câmera nativa ou fallback getUserMedia
+  - Layout com timers Desktop = timers Mobile
 */
 
 let treinoIniciado=false, treinoEncerrado=false, paused=false;
@@ -49,13 +47,19 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   // Botões Desktop
   document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
-  document.getElementById('stopBtn').addEventListener('click', encerrarTreino);
+  // STOP com confirmação
+  document.getElementById('stopBtn').removeEventListener('click', encerrarTreino);
+  document.getElementById('stopBtn').addEventListener('click', encerrarTreinoConfirm);
+
   document.getElementById('trackerDesktopBtn').addEventListener('click', toggleTrackerDesktop);
   document.getElementById('exportDesktopBtn').addEventListener('click', exportarCSV);
 
   // Botões Mobile
   document.getElementById('playPauseBtnMobile').addEventListener('click', togglePlayPause);
-  document.getElementById('stopBtnMobile').addEventListener('click', encerrarTreino);
+  // STOP com confirmação
+  document.getElementById('stopBtnMobile').removeEventListener('click', encerrarTreino);
+  document.getElementById('stopBtnMobile').addEventListener('click', encerrarTreinoConfirm);
+
   document.getElementById('trackerToggleBtn').addEventListener('click', toggleTrackerMobile);
   document.getElementById('exportBtnMobile').addEventListener('click', exportarCSV);
 
@@ -201,9 +205,15 @@ function pausarTreino(){
     document.getElementById('restTimerMobile').textContent=formatTime(r);
   },50);
 
-  // Botão vira “▶ Retomar” no desktop e “▶” no mobile
+  // Botão vira “▶ Retomar”
   document.getElementById('playPauseBtn').textContent="▶ Retomar";
   document.getElementById('playPauseBtnMobile').textContent="▶";
+}
+
+// Confirmação para encerrar
+function encerrarTreinoConfirm(){
+  const c = confirm("Deseja realmente encerrar o treino?");
+  if(c) encerrarTreino();
 }
 
 function encerrarTreino(){
@@ -271,14 +281,10 @@ function handleCheck(e){
     lastCheckTime=accumulatedTime+(Date.now()-startPauseTime);
 
     const strNoMs=formatTimeNoMs(partial); 
-    // ex: "12:32"
-    // Exemplo de 2 linhas:
-    // "Último Exercício:\nCardio Caminhada/Bike 10-15min - ⌚12:32"
     document.getElementById('lastExerciseTime').innerHTML=
-      `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
-
+      `<strong>Último Exercício:</strong><br/>${exerciseName} - ⌚${strNoMs}`;
     document.getElementById('lastExerciseTimeMobile').innerHTML=
-      `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
+      `<strong>Último Exercício:</strong><br/>${exerciseName} - ⌚${strNoMs}`;
 
     // Adiciona no tracker
     exerciseLog.push({
@@ -288,7 +294,7 @@ function handleCheck(e){
     });
     addToTracker(exerciseName, partial);
 
-    // Se no tempo do <li> quiser ms, use formatTime:
+    // Exibir tempo no <li>
     const tempoSpan=e.target.parentElement.querySelector('.tempo');
     if(tempoSpan) tempoSpan.textContent=formatTime(partial);
 
@@ -320,9 +326,7 @@ function checkFinal(){
   }
 }
 function addToTracker(name,msVal){
-  // Nome em bold, tempo normal
   const timeStr=formatTime(msVal);
-  // ex: <strong>Rosca Biceps</strong> - 03:24.56
   const strHtml=`<strong>${name}</strong> - ${timeStr}`;
 
   // Desktop
@@ -397,7 +401,7 @@ function formatTime(ms){
   const ms2=Math.floor((ms%1000)/10);
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms2).padStart(2,'0')}`;
 }
-/* Format time SEM ms - p/ "Ultimo Exercício" */
+/* Format time SEM ms */
 function formatTimeNoMs(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
@@ -417,7 +421,20 @@ function fecharLightbox(){
 
 /* GYMRATS / SPOTIFY */
 function abrirGymrats(){
-  window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
+  const ua = navigator.userAgent.toLowerCase();
+  if(/android/.test(ua)){
+    window.location.href = "intent://#Intent;scheme=gymrats;package=com.hasz.gymrats.app;end";
+    setTimeout(()=>{
+      window.location.href = "https://play.google.com/store/apps/details?id=com.hasz.gymrats.app";
+    },1500);
+  } else if(/iphone|ipad|ipod/.test(ua)){
+    window.location.href = "gymrats://";
+    setTimeout(()=>{
+      window.location.href = "https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814";
+    },1500);
+  } else {
+    window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
+  }
 }
 function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
@@ -425,12 +442,43 @@ function abrirSpotify(){
 
 /* CAMERA */
 async function abrirCamera(){
-  try{
-    const st=await navigator.mediaDevices.getUserMedia({video:true});
-    alert("Câmera do navegador ativada!");
-  } catch(e){
-    alert("Não foi possível acessar a câmera: "+ e);
+  const ua = navigator.userAgent.toLowerCase();
+  // Tentativa de abrir "camera://" (não padronizado) + fallback
+  if(/android/.test(ua)){
+    window.location.href = "camera://";
+    setTimeout(()=>{
+      openBrowserCamera();
+    },1200);
+  } else if(/iphone|ipad|ipod/.test(ua)){
+    window.location.href = "camera://";
+    setTimeout(()=>{
+      openBrowserCamera();
+    },1200);
+  } else {
+    // Desktop ou outro
+    openBrowserCamera();
   }
+}
+
+function openBrowserCamera(){
+  navigator.mediaDevices.getUserMedia({video:true})
+    .then(stream=>{
+      alert("Câmera do navegador ativada!");
+      // Exibe preview
+      const video = document.createElement('video');
+      video.autoplay = true;
+      video.srcObject = stream;
+      video.style.position = 'fixed';
+      video.style.bottom = '0';
+      video.style.right = '0';
+      video.style.width = '200px';
+      video.style.height = '150px';
+      video.style.zIndex = '100000';
+      document.body.appendChild(video);
+    })
+    .catch(e=>{
+      alert("Não foi possível acessar a câmera: "+ e);
+    });
 }
 
 /* TRACKER Toggles */
