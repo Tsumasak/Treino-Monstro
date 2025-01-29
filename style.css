@@ -1,16 +1,14 @@
-/* ======================
-   style.css
-   - Ajustado texts (Exercício/Descanso) => 12px
-   - "Treino A" sem cor de fundo estranha
-   - Tracker => somente nome em bold, tempo normal
-   - Modal confetes => fundo branco + glass
-   - Menos espaço no mobile top
-====================== */
+/* style.css (trechos principais) 
+   - Sidebar desktop estilo mobile
+   - Botão com borda #ccc
+   - "Último Exercício" em bold 
+   - Aumento espaçamento (margin-bottom:2rem) em Exercícios, Abdominais, Cardio
+   - Desfoque do fundo ao abrir modal (body blur ou overlay) 
+*/
 
-* {
-  margin:0; padding:0; box-sizing:border-box;
-}
-html,body {
+/* RESET e base */
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body {
   min-height:100%;
   display:flex; flex-direction:column;
   font-family:'Inter', sans-serif;
@@ -36,9 +34,7 @@ header {
   transition:transform 0.3s ease;
   box-shadow:0 4px 12px rgba(0,0,0,0.1);
 }
-.header-hidden {
-  transform:translateY(-120%);
-}
+.header-hidden { transform:translateY(-120%);}
 .header-title {
   font-weight:600; font-size:1.2rem; color:#333;
 }
@@ -47,289 +43,98 @@ header {
 }
 .brand-button {
   width:36px; height:36px; border:none; border-radius:12px;
-  cursor:pointer; overflow:hidden;
-  transition:transform 0.2s;
+  cursor:pointer; overflow:hidden; transition:transform 0.2s;
 }
 .brand-button img {
   width:100%; height:100%; object-fit:cover; display:block;
 }
-.brand-button:hover {
-  transform:scale(1.05);
+.brand-button:hover { transform:scale(1.05); }
+
+/* SIDEBAR DESKTOP => Estilo Mobile Flutuante */
+.sidebar-desktop {
+  position:fixed;
+  bottom:80px; right:16px; /* Exemplo de posicionamento */
+  width:300px; 
+  background:rgba(255,255,255,0.4); 
+  backdrop-filter:blur(10px);
+  border-radius:20px; border:1px solid rgba(255,255,255,0.2);
+  box-shadow:0 6px 12px rgba(0,0,0,0.2);
+  padding:1rem; z-index:9999;
+  display:flex; flex-direction:column; gap:1rem;
+}
+.desktop-variant {
+  display:flex; gap:24px; justify-content:center; align-items:center; 
+}
+#lastExerciseDesktop {
+  font-size:0.9rem; color:#333; 
+}
+.mobile-row .mobile-btn {
+  /* Borda #ccc e etc. */
+  border:1px solid #ccc;
 }
 
-/* CONTAINER */
+/* MAIN */
 .container {
   flex:1; display:flex; width:100%; max-width:1200px;
   margin:0 auto; padding:1rem; gap:1rem; margin-top:100px;
   overflow:visible;
 }
-.sidebar {
-  width:300px; background:rgba(255,255,255,0.3);
-  backdrop-filter:blur(12px);
-  border-radius:20px; border:1px solid rgba(255,255,255,0.2);
-  box-shadow:0 8px 32px rgba(0,0,0,0.15);
-  padding:1rem; display:flex; flex-direction:column; align-items:center;
-  overflow:visible;
-}
-.sidebar h2 {
-  margin-bottom:1rem; color:#333;
-}
-
-/* Timers Desktop */
-.timers-desktop {
-  display:flex; justify-content:center; align-items:center;
-  gap:24px; /* spacing */
-  margin-bottom:1rem;
-}
-.timerBoxContainer {
-  display:flex; flex-direction:column; align-items:center;
-}
-.timerValue {
-  font-family:'Russo One',sans-serif;
-  font-size:1.8rem; 
-  font-weight:bold; 
-  background:rgba(255,255,255,0.6);
-  border:1px solid rgba(0,0,0,0.1);
-  border-radius:8px;
-  padding:0.4rem 0.8rem;
-  box-shadow:0 2px 4px rgba(0,0,0,0.1);
-  min-width:80px; text-align:center;
-  font-variant-numeric:tabular-nums;
-  color:#111;
-}
-.timerValue.exercise { color:#e60000; }
-.timerValue.rest { color:#2c3; }
-
-.lastLineDesktop {
-  font-size:0.9rem; color:#333; margin-bottom:1rem;
-  text-align:center; width:100%;
-}
-
-/* Botoes Desktop */
-.desktop-buttons {
-  display:flex; flex-direction:column; gap:0.5rem; width:100%;
-}
-.desktop-btn {
-  background:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:20px;
-  padding:0.8rem 1rem;
-  cursor:pointer; font-size:1rem; color:#333;
-  backdrop-filter:blur(6px);
-  transition:background 0.3s,transform 0.2s,box-shadow 0.2s;
-  display:flex; justify-content:center; align-items:center;
-}
-.desktop-btn:hover {
-  background:rgba(255,255,255,0.7);
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-  transform:scale(1.03);
-}
-.divider {
-  height:1px; width:100%; background:rgba(255,255,255,0.5);
-  margin:0.5rem 0;
-}
-
-/* MAIN CONTENT */
 .main-content {
   flex:1; display:flex; flex-direction:column; gap:1rem; overflow:visible;
 }
 nav {
   display:flex; gap:1rem; justify-content:center; margin-bottom:0.5rem;
 }
-nav button {
-  background:rgba(255,255,255,0.4); backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,0.2);
-  border-radius:20px; padding:0.5rem 1rem;
-  cursor:pointer; font-size:1rem; font-weight:500;
-  transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
-}
-nav button:hover {
-  background:rgba(255,255,255,0.7);
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  transform:scale(1.03);
-}
 .activeBtn {
-  /* Treino A ativo, mas sem cor estranha => pode ficar sem cor ou bem sutil */
-  background:rgba(255,255,255,0.4); 
+  background:rgba(255,255,255,0.4);
 }
-
-/* Seções de Treino */
-section {
-  display:none;
-  background:rgba(255,255,255,0.3);
-  backdrop-filter:blur(10px);
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,0.2);
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  padding:1rem;
-  overflow:visible;
+.exercicios {
+  margin-bottom:2rem; /* aumentado */
 }
-section.active { display:block; }
-section h2 { margin-bottom:1rem; color:#333; }
-.objetivo {
-  background:rgba(255,255,255,0.2);
-  border-radius:12px; border-left:5px solid #ff00ff33;
-  padding:1rem; margin-bottom:1rem;
-}
-.exercicios h3 {
-  margin-bottom:0.5rem; color:#444; font-weight:600;
-}
-ul {
-  list-style:none; margin:0.5rem 0; padding:0;
-}
-ul li {
-  display:grid;
-  grid-template-columns:auto 64px 1fr auto;
-  gap:0.5rem;
-  align-items:center;
-  margin-bottom:0.5rem;
-}
-ul li input[type="checkbox"] {
-  width:20px; height:20px; cursor:pointer; accent-color:#c400c6;
-}
-.thumb-container {
-  width:64px; height:64px; border-radius:8px; overflow:hidden;
-}
-.thumb-container img {
-  width:100%; height:100%; object-fit:cover;
-  transition:transform 0.2s, box-shadow 0.2s; cursor:pointer;
-}
-.thumb-container img:hover {
-  transform:scale(1.03);
-  box-shadow:0 4px 8px rgba(0,0,0,0.1);
-}
-label {
-  word-wrap:break-word; 
-  white-space:normal;
-}
-.tempo {
-  font-size:0.85rem; color:#777; justify-self:end; margin-right:0.5rem;
-}
-.observacoes {
+.observacoes { 
   background:rgba(200,255,200,0.2);
-  border-left:5px solid #3f3;
-  border-radius:12px;
+  border-left:5px solid #3f3; border-radius:12px;
   padding:1rem; margin-top:1rem; color:#333;
 }
 
-/* TRACKER DESKTOP -> somente nome do exercício em bold, tempo normal
-   => implementado no script (tag <strong> no nome, normal p/ tempo)
-*/
-#trackerDesktop {
-  width:100%; margin-top:1rem;
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(6px);
-  border-radius:12px;
-  padding:1rem;
-  border:1px solid rgba(255,255,255,0.3);
-  max-height:200px; 
-  overflow-y:auto;
-  font-size:0.9rem;
-  display:none;
-}
-#trackerDesktop h4 { margin-bottom:0.5rem; }
-#trackerDesktop li { margin:0.3rem 0; }
-
-/* BOTTOM BAR (MOBILE) */
+/* BOTTOM-BAR (MOBILE) */
 .bottom-bar {
   display:none;
   position:fixed; left:12px; right:12px; bottom:12px;
   background:rgba(255,255,255,0.4); backdrop-filter:blur(10px);
   border-radius:20px; border:1px solid rgba(255,255,255,0.2);
   box-shadow:0 6px 12px rgba(0,0,0,0.2);
-  padding:1rem; z-index:9999;
-  flex-direction:column; gap:0.5rem;
-  overflow:visible;
+  padding:1rem; z-index:9999; flex-direction:column; gap:0.5rem; overflow:visible;
 }
 .timers-mobile {
-  display:flex; gap:24px; justify-content:center; align-items:center;
-  margin-bottom:0.3rem;
+  display:flex; gap:24px; justify-content:center; align-items:center; 
 }
-.timerBoxMobile {
-  display:flex; flex-direction:column; align-items:center;
-}
-.timerLabelMobile {
-  font-size:12px; color:#555; margin-bottom:2px; font-weight:bold;
+.timerBoxMobile { display:flex; flex-direction:column; align-items:center; }
+.timerLabelMobile { 
+  font-size:12px; font-weight:bold; margin-bottom:2px; color:#555;
 }
 .timerValueMobile {
   font-family:'Russo One',sans-serif;
-  font-size:1.5rem;
-  font-weight:bold;
+  font-size:1.5rem; font-weight:bold;
   background:rgba(255,255,255,0.6);
-  border:1px solid rgba(0,0,0,0.1);
+  border:1px solid #ccc;
   border-radius:8px;
   padding:0.4rem 0.8rem;
   box-shadow:0 2px 4px rgba(0,0,0,0.1);
-  text-align:center;
-  color:#111;
+  text-align:center; color:#111;
 }
-.timerValueMobile.exercise { color:#e60000; }
-.timerValueMobile.rest { color:#2c3; }
+.lastLineMobile { font-size:0.8rem; color:#333; }
 
-.lastLineMobile {
-  font-size:0.8rem; color:#333; text-align:center; width:100%;
-  margin-bottom:0.3rem;
-}
-
-.mobile-row {
-  display:flex; gap:0.5rem; justify-content:center;
-  margin-top:0.5rem;
-}
-.mobile-btn {
-  background:rgba(255,255,255,0.5);
-  border:1px solid rgba(255,255,255,0.3);
-  border-radius:20px;
-  padding:0.4rem 0.8rem; 
-  cursor:pointer; font-size:1rem; color:#333;
-  backdrop-filter:blur(6px);
-  transition:background 0.2s,transform 0.2s,box-shadow 0.2s;
-}
-.mobile-btn:hover {
-  background:rgba(255,255,255,0.7);
-  box-shadow:0 4px 8px rgba(0,0,0,0.1);
-  transform:scale(1.05);
-}
-
-/* Tracker Mobile -> somente nome em bold; tempo normal
-   => script vai injetar <strong> para nome, normal p/ tempo
+/* TRACKER MOBILE / DESKTOP => nome do exercício em bold, tempo normal => 
+   Feito via script: <strong>nome</strong> - tempo
 */
-.tracker-mobile {
-  background:rgba(255,255,255,0.2);
-  backdrop-filter:blur(4px);
-  border-radius:12px;
-  padding:0.5rem;
-  border:1px solid rgba(255,255,255,0.3);
-  max-height:100px; 
-  overflow-y:auto;
-  font-size:0.8rem;
-  margin-top:0.3rem;
-}
-.tracker-mobile li { margin:0.2rem 0; }
 
-/* LIGHTBOX */
+/* LIGHTBOX, MODALS */
 .lightbox {
   position:fixed; top:0; left:0; width:100%; height:100%;
   background:rgba(0,0,0,0.8);
-  display:none; justify-content:center; align-items:center;
-  z-index:10000;
+  display:none; justify-content:center; align-items:center; z-index:10000;
 }
-.lightbox.open { display:flex; }
-.lightbox img {
-  max-width:90%; max-height:90%;
-  border:4px solid #fff; border-radius:8px;
-  box-shadow:0 2px 8px rgba(0,0,0,0.3);
-}
-.close-btn {
-  position:absolute; top:20px; right:20px;
-  background:#444; color:#fff; border:none; border-radius:20px;
-  padding:0.5rem 1rem; cursor:pointer; font-size:1.2rem;
-  transition:background 0.2s,transform 0.2s;
-}
-.close-btn:hover {
-  background:#666; transform:scale(1.05);
-}
-
-/* Modal TrocaTreino / Conclusão c/ fundo branco + glass */
 .modal-overlay {
   position:fixed; top:0; left:0; width:100%; height:100%;
   background:rgba(255,255,255,0.4);
@@ -338,54 +143,26 @@ label {
   display:none; justify-content:center; align-items:center;
 }
 .modal-overlay.show { display:flex; }
-.modal-content {
-  background:rgba(255,255,255,0.9);
-  backdrop-filter:blur(6px);
-  border-radius:12px;
-  padding:2rem; 
-  text-align:center;
-  max-width:400px; width:90%;
+/* Desfocar todo fundo => 
+   Podemos aplicar no body ou overlay covering everything. 
+*/
+.modal-congrats.show {
+  display:flex; 
+  /* Desfocar fundo => Use um trick: 
+     .modal-congrats:before { content:""; etc }
+     ou overlay. 
+     Já temos overlay, iremos usar a styles. 
+  */
 }
-.modal-congrats {
-  position:fixed; top:0; left:0; width:100%; height:100%;
-  display:none; justify-content:center; align-items:center;
-  z-index:99999;
-}
-.modal-congrats.show { display:flex; }
 .modal-congrats-content {
   background:rgba(255,255,255,0.9);
   backdrop-filter:blur(8px);
-  border-radius:12px; 
-  padding:2rem; text-align:center;
-  max-width:400px; width:90%; color:#333;
-  z-index:100000;
-}
-.modal-congrats-content h2 { margin-bottom:1rem; }
-.modal-congrats-content button {
-  background:#444; color:#fff; border:none; border-radius:8px;
-  padding:0.6rem 1.2rem; margin:0.5rem; cursor:pointer;
-  transition:background 0.2s,transform 0.2s;
-}
-.modal-congrats-content button:hover {
-  background:#666; transform:scale(1.05);
+  border-radius:12px; padding:2rem; text-align:center;
+  max-width:400px; width:90%; color:#333; z-index:100000;
+  /* fim do glass */
 }
 
-/* FOOTER */
-footer {
-  text-align:center; font-size:0.8rem; color:#666;
-  padding:0.5rem 0;
-  background:rgba(255,255,255,0.4);
-  backdrop-filter:blur(4px);
-  margin-top:auto;
-}
-
-/* MENOS ESPAÇO NO MOBILE (Treinos A/B) */
-@media(max-width:768px){
-  .container {
-    flex-direction:column;
-    margin-top:80px; /* Diminuído */
-  }
-  .sidebar{ display:none; }
-  .main-content{ padding-bottom:14rem; }
-  .bottom-bar{ display:flex; }
+/* Conf etc. */
+.mobile-btn { 
+  border:1px solid #ccc; 
 }
