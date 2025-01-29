@@ -416,23 +416,23 @@ function fecharLightbox(){
 }
 
 /* GYMRATS / SPOTIFY */
-function abrirGymrats(){
-  if(/android/i.test(navigator.userAgent)){
-    // Android
-    window.location.href="intent://com.hasz.gymrats.app#Intent;scheme=gymrats;package=com.hasz.gymrats.app;end";
-    setTimeout(()=>{
-      window.open("https://play.google.com/store/apps/details?id=com.hasz.gymrats.app","_blank");
-    },1500);
-  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
-    // iOS
-    window.location.href="gymrats://";
-    setTimeout(()=>{
-      window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
-    },1500);
-  } else {
-    window.open("https://play.google.com/store/apps/details?id=com.hasz.gymrats.app","_blank");
-  }
-}
+    function abrirGymrats(){
+      const ua=navigator.userAgent.toLowerCase();
+      if(/android/.test(ua)){
+        window.location.href="intent://#Intent;scheme=gymrats;package=com.hasz.gymrats.app;end";
+        setTimeout(()=>{
+          window.location.href="https://play.google.com/store/apps/details?id=com.hasz.gymrats.app";
+        },1500);
+      } else if(/iphone|ipad|ipod/.test(ua)){
+        window.location.href="gymrats://";
+        setTimeout(()=>{
+          window.location.href="https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814";
+        },1500);
+      } else {
+        window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
+      }
+    }
+
 function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
