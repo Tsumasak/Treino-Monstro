@@ -420,7 +420,6 @@ function fecharLightbox(){
 }
 
 /* GYMRATS / SPOTIFY */
-<<<<<<< HEAD
 function abrirGymrats(){
   const ua = navigator.userAgent.toLowerCase();
   if(/android/.test(ua)){
@@ -437,31 +436,11 @@ function abrirGymrats(){
     window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
   }
 }
-=======
-    function abrirGymrats(){
-      const ua=navigator.userAgent.toLowerCase();
-      if(/android/.test(ua)){
-        window.location.href="intent://#Intent;scheme=gymrats;package=com.hasz.gymrats.app;end";
-        setTimeout(()=>{
-          window.location.href="https://play.google.com/store/apps/details?id=com.hasz.gymrats.app";
-        },1500);
-      } else if(/iphone|ipad|ipod/.test(ua)){
-        window.location.href="gymrats://";
-        setTimeout(()=>{
-          window.location.href="https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814";
-        },1500);
-      } else {
-        window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
-      }
-    }
-
->>>>>>> fd168b03c0251ce7b2b0518008125e1700f588a3
 function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
 
 /* CAMERA */
-<<<<<<< HEAD
 async function abrirCamera(){
   const ua = navigator.userAgent.toLowerCase();
   // Tentativa de abrir "camera://" (não padronizado) + fallback
@@ -502,19 +481,6 @@ function openBrowserCamera(){
     });
 }
 
-=======
-function abrirCameraNativo(){
-  if(/android/i.test(navigator.userAgent)){
-    // Android camera intent
-    window.location.href="intent://camera#Intent;action=android.media.action.IMAGE_CAPTURE;end";
-  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
-    // iOS
-    window.location.href="camera://";
-  } else {
-    alert("Não foi possível abrir a câmera nativa neste dispositivo.");
-  }
-}
->>>>>>> fd168b03c0251ce7b2b0518008125e1700f588a3
 /* TRACKER Toggles */
 let trackerDesktopVisible=false;
 function toggleTrackerDesktop(){
