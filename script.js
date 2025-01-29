@@ -1,44 +1,61 @@
-/* script.js
-   - Confirm STOP
-   - Botão Gymrats abrindo o App se instalado (intent://... fallback)
-   - Câmera nativa via "camera://" scheme
-   - Etc.
+/* 
+  script.js
+  - Exercicio e Descanso: com intervals
+  - Botões mobile só ícones
+  - Último Exercício => 2 linhas
+  - Tracker => nome bold, tempo normal (injetado no DOM)
+  - Modal confetes com fundo glass
+  - Novo btn Exportar na modal parabéns
+  - Changelog modal
 */
 
 let treinoIniciado=false, treinoEncerrado=false, paused=false;
-let accumulatedTime=0;
+let accumulatedTime=0; // Exercício
 let startPauseTime=0;
 let lastCheckTime=0;
-let intervalEx=null;
-let intervalRest=null;
-let restTotal=0, restStart=0, restRunning=false;
+let intervalEx=null;   // Interval p/ exercicio
+let intervalRest=null; // Interval p/ descanso
+
 let totalA=0, doneA=0, totalB=0, doneB=0;
+let restTotal=0;
+let restStart=0;
+let restRunning=false;
+
 let exerciseLog=[];
+
 let trocarTreinoId=null;
 
-let confettiCanvas=null, ctx=null, confettiPieces=[];
+// Confetti
+let confettiCanvas=null, ctx=null;
+let confettiPieces=[];
 let confettiTimer=null;
-let firstStart=true;
-let countdownOverlay=null, countdownDiv=null, countdownVal=5, countdownInterval=null;
 
-/* ON LOAD */
+// Countdown
+let firstStart=true;
+let countdownOverlay=null;
+let countdownDiv=null;
+let countdownVal=5;
+let countdownInterval=null;
+
 window.addEventListener('DOMContentLoaded',()=>{
+  // Contar checkboxes
   document.querySelectorAll('input[type="checkbox"]').forEach(ch=>{
-    if(ch.dataset.group==='A') totalA++;
-    else if(ch.dataset.group==='B') totalB++;
+    const grp=ch.dataset.group;
+    if(grp==='A') totalA++;
+    if(grp==='B') totalB++;
     ch.disabled=true;
     ch.addEventListener('change', handleCheck);
   });
 
-  // Desktop buttons
-  document.getElementById('playPauseBtnDesktop').addEventListener('click', togglePlayPauseDesktop);
-  document.getElementById('stopBtnDesktop').addEventListener('click', confirmStopDesktop);
-  document.getElementById('trackerDesktopBtn2').addEventListener('click', toggleTrackerDesktopFlutuante);
-  document.getElementById('exportDesktopBtn2').addEventListener('click', exportarCSV);
+  // Botões Desktop
+  document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+  document.getElementById('stopBtn').addEventListener('click', encerrarTreino);
+  document.getElementById('trackerDesktopBtn').addEventListener('click', toggleTrackerDesktop);
+  document.getElementById('exportDesktopBtn').addEventListener('click', exportarCSV);
 
-  // Mobile
-  document.getElementById('playPauseBtnMobile').addEventListener('click', togglePlayPauseMobile);
-  document.getElementById('stopBtnMobile').addEventListener('click', confirmStopMobile);
+  // Botões Mobile
+  document.getElementById('playPauseBtnMobile').addEventListener('click', togglePlayPause);
+  document.getElementById('stopBtnMobile').addEventListener('click', encerrarTreino);
   document.getElementById('trackerToggleBtn').addEventListener('click', toggleTrackerMobile);
   document.getElementById('exportBtnMobile').addEventListener('click', exportarCSV);
 
@@ -52,13 +69,26 @@ window.addEventListener('DOMContentLoaded',()=>{
     });
   });
 
+  // Hide header on scroll
+  let lastScrollTop=0;
+  window.addEventListener('scroll',()=>{
+    const st=window.pageYOffset||document.documentElement.scrollTop;
+    const head=document.getElementById('mainHeader');
+    if(st>lastScrollTop){
+      head.classList.add('header-hidden');
+    } else {
+      head.classList.remove('header-hidden');
+    }
+    lastScrollTop=(st<=0?0:st);
+  });
+
   // Confetti
   confettiCanvas=document.getElementById('confettiCanvas');
   confettiCanvas.width=window.innerWidth;
   confettiCanvas.height=window.innerHeight;
   ctx=confettiCanvas.getContext('2d');
 
-  // Countdown overlay
+  // Countdown Overlay
   countdownOverlay=document.createElement('div');
   countdownOverlay.style.position='fixed';
   countdownOverlay.style.top='0'; 
@@ -81,45 +111,25 @@ window.addEventListener('DOMContentLoaded',()=>{
   countdownOverlay.appendChild(countdownDiv);
 });
 
-/* DESKTOP-LIKE FUNCS */
-function togglePlayPauseDesktop(){
+/* ---------- FUNÇÕES: PLAY/PAUSE/STOP ---------- */
+function togglePlayPause(){
+  if(treinoEncerrado)return;
   if(!treinoIniciado){
-    if(firstStart){ firstStart=false; showCountdown(); }
-    else iniciarTreino();
+    if(firstStart){
+      firstStart=false;
+      showCountdown();
+    } else {
+      iniciarExercicio();
+    }
   } else {
-    if(!paused) pausarTreino();
-    else iniciarTreino();
-  }
-}
-function confirmStopDesktop(){
-  const confirmMsg=confirm("Tem certeza que deseja encerrar o treino?");
-  if(confirmMsg){
-    encerrarTreino();
-  }
-}
-function toggleTrackerDesktopFlutuante(){
-  const el=document.getElementById('trackerDesktopFlutuante');
-  el.style.display=(el.style.display==='none'?'block':'none');
-}
-
-/* MOBILE-LIKE FUNCS */
-function togglePlayPauseMobile(){
-  if(!treinoIniciado){
-    if(firstStart){ firstStart=false; showCountdown(); }
-    else iniciarTreino();
-  } else {
-    if(!paused) pausarTreino();
-    else iniciarTreino();
-  }
-}
-function confirmStopMobile(){
-  const confirmMsg=confirm("Tem certeza que deseja encerrar o treino?");
-  if(confirmMsg){
-    encerrarTreino();
+    if(!paused){
+      pausarTreino();
+    } else {
+      iniciarExercicio();
+    }
   }
 }
 
-/* GERAL FUNCS DE EXERCICIO */
 function showCountdown(){
   countdownVal=5;
   countdownOverlay.style.display='flex';
@@ -136,56 +146,79 @@ function showCountdown(){
       clearInterval(countdownInterval);
       setTimeout(()=>{
         countdownOverlay.style.display='none';
-        iniciarTreino();
+        iniciarExercicio();
       },1000);
     }
   },1000);
 }
-function iniciarTreino(){
-  treinoIniciado=true; paused=false;
+
+function iniciarExercicio(){
+  treinoIniciado=true;
+  paused=false;
   startPauseTime=Date.now();
 
   if(intervalEx) clearInterval(intervalEx);
   intervalEx=setInterval(()=>{
     const elapsed=accumulatedTime+(Date.now()-startPauseTime);
     // Desktop
-    document.getElementById('exerciseTimerDesktop').textContent=formatTime(elapsed);
+    document.getElementById('exerciseTimeValue').textContent=formatTime(elapsed);
     // Mobile
     document.getElementById('exerciseTimerMobile').textContent=formatTime(elapsed);
   },50);
 
+  // Se estava descansando
   if(restRunning){
     restRunning=false;
     if(intervalRest) clearInterval(intervalRest);
     restTotal+=(Date.now()-restStart);
     updateRestDisplay();
   }
+
+  setCheckBoxesDisabled(false);
+  // Botão vira Pausar
+  document.getElementById('playPauseBtn').textContent="⏸ Pausar";
+  document.getElementById('playPauseBtnMobile').textContent="⏸";
 }
+
 function pausarTreino(){
   if(!treinoIniciado||treinoEncerrado||paused)return;
   paused=true;
   accumulatedTime+=(Date.now()-startPauseTime);
-  if(intervalEx){ clearInterval(intervalEx); intervalEx=null; }
+  if(intervalEx) clearInterval(intervalEx);
+  intervalEx=null;
 
-  // Descanso
-  restRunning=true; restStart=Date.now();
+  setCheckBoxesDisabled(true);
+
+  // Inicia descanso
+  restRunning=true;
+  restStart=Date.now();
   if(intervalRest) clearInterval(intervalRest);
   intervalRest=setInterval(()=>{
     const r=restTotal+(Date.now()-restStart);
-    document.getElementById('restTimerDesktop').textContent=formatTime(r);
+    // Desktop
+    document.getElementById('restTimeValue').textContent=formatTime(r);
+    // Mobile
     document.getElementById('restTimerMobile').textContent=formatTime(r);
   },50);
+
+  // Botão vira “▶ Retomar” no desktop e “▶” no mobile
+  document.getElementById('playPauseBtn').textContent="▶ Retomar";
+  document.getElementById('playPauseBtnMobile').textContent="▶";
 }
+
 function encerrarTreino(){
   if(!treinoIniciado||treinoEncerrado)return;
   if(!paused){
     accumulatedTime+=(Date.now()-startPauseTime);
-    if(intervalEx){ clearInterval(intervalEx); intervalEx=null; }
+    if(intervalEx)clearInterval(intervalEx);
+    intervalEx=null;
   }
   treinoEncerrado=true; paused=true;
+
   if(restRunning){
     restRunning=false;
-    if(intervalRest){ clearInterval(intervalRest); intervalRest=null; }
+    if(intervalRest) clearInterval(intervalRest);
+    intervalRest=null;
     restTotal+=(Date.now()-restStart);
   }
   updateRestDisplay();
@@ -197,7 +230,33 @@ function fecharCongrats(){
   stopConfetti();
 }
 
-/* CHECK / TRACKER */
+/* ---------- TROCAR TREINO ---------- */
+function mostrarTreino(id){
+  if(treinoIniciado && !paused && !treinoEncerrado){
+    trocarTreinoId=id;
+    document.getElementById('modalTrocarTreino').classList.add('show');
+  } else {
+    doChangeTreino(id);
+  }
+}
+function pausarAgora(){
+  pausarTreino();
+  document.getElementById('modalTrocarTreino').classList.remove('show');
+  if(trocarTreinoId){
+    doChangeTreino(trocarTreinoId);
+    trocarTreinoId=null;
+  }
+}
+function cancelarTrocaTreino(){
+  document.getElementById('modalTrocarTreino').classList.remove('show');
+  trocarTreinoId=null;
+}
+function doChangeTreino(id){
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+/* ---------- CHECKBOXES / TRACKER ---------- */
 function handleCheck(e){
   if(!treinoIniciado||paused||treinoEncerrado){
     e.target.checked=!e.target.checked;
@@ -205,16 +264,19 @@ function handleCheck(e){
     return;
   }
   const grp=e.target.dataset.group;
+  const exerciseName=e.target.dataset.exercise; 
   if(e.target.checked){
     if(grp==='A') doneA++; else if(grp==='B') doneB++;
     const partial=(accumulatedTime+(Date.now()-startPauseTime))-lastCheckTime;
     lastCheckTime=accumulatedTime+(Date.now()-startPauseTime);
 
-    // 2-linhas no "Último Exercício"
-    const exerciseName=e.target.dataset.exercise;
-    const strNoMs=formatTimeNoMs(partial);
-    document.getElementById('lastExerciseDesktop').innerHTML=
+    const strNoMs=formatTimeNoMs(partial); 
+    // ex: "12:32"
+    // Exemplo de 2 linhas:
+    // "Último Exercício:\nCardio Caminhada/Bike 10-15min - ⌚12:32"
+    document.getElementById('lastExerciseTime').innerHTML=
       `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
+
     document.getElementById('lastExerciseTimeMobile').innerHTML=
       `Último Exercício:<br/>${exerciseName} - ⌚${strNoMs}`;
 
@@ -226,7 +288,7 @@ function handleCheck(e){
     });
     addToTracker(exerciseName, partial);
 
-    // Tempo c/ ms no label
+    // Se no tempo do <li> quiser ms, use formatTime:
     const tempoSpan=e.target.parentElement.querySelector('.tempo');
     if(tempoSpan) tempoSpan.textContent=formatTime(partial);
 
@@ -242,12 +304,14 @@ function checkFinal(){
   if(doneA===totalA || doneB===totalB){
     if(!paused){
       accumulatedTime+=(Date.now()-startPauseTime);
-      if(intervalEx){ clearInterval(intervalEx); intervalEx=null; }
+      if(intervalEx) clearInterval(intervalEx);
+      intervalEx=null;
     }
     treinoEncerrado=true; paused=true;
     if(restRunning){
       restRunning=false;
-      if(intervalRest){ clearInterval(intervalRest); intervalRest=null; }
+      if(intervalRest) clearInterval(intervalRest);
+      intervalRest=null;
       restTotal+=(Date.now()-restStart);
     }
     updateRestDisplay();
@@ -256,31 +320,50 @@ function checkFinal(){
   }
 }
 function addToTracker(name,msVal){
-  // "<strong>nome</strong> - tempo"
-  const htmlStr=`<strong>${name}</strong> - ${formatTime(msVal)}`;
+  // Nome em bold, tempo normal
+  const timeStr=formatTime(msVal);
+  // ex: <strong>Rosca Biceps</strong> - 03:24.56
+  const strHtml=`<strong>${name}</strong> - ${timeStr}`;
 
-  // Sidebar flutuante desktop
-  const dsf=document.getElementById('trackerDesktopListFlutuante');
-  const liDsf=document.createElement('li');
-  liDsf.innerHTML=htmlStr;
-  dsf.appendChild(liDsf);
+  // Desktop
+  const dUl=document.getElementById('trackerDesktopList');
+  const liD=document.createElement('li');
+  liD.innerHTML=strHtml;
+  dUl.appendChild(liD);
 
   // Mobile
-  const mobUl=document.getElementById('trackerMobileList');
+  const mUl=document.getElementById('trackerMobileList');
   const liM=document.createElement('li');
-  liM.innerHTML=htmlStr;
-  mobUl.appendChild(liM);
+  liM.innerHTML=strHtml;
+  mUl.appendChild(liM);
 
   updateRestDisplay();
 }
+
+/* Exibe tempo final de descanso */
 function updateRestDisplay(){
-  // Desktop
-  document.getElementById('restTimerDesktop').textContent=formatTime(restTotal);
-  // Mobile
+  document.getElementById('restTimeValue').textContent=formatTime(restTotal);
   document.getElementById('restTimerMobile').textContent=formatTime(restTotal);
+
+  // Tracker desc
+  const dUl=document.getElementById('trackerDesktopList');
+  let exD=dUl.querySelector('li[data-descanso="true"]');
+  if(exD) exD.remove();
+  const liD=document.createElement('li');
+  liD.dataset.descanso="true";
+  liD.innerHTML="Descanso Total - "+formatTime(restTotal);
+  dUl.appendChild(liD);
+
+  const mUl=document.getElementById('trackerMobileList');
+  let exM=mUl.querySelector('li[data-descanso="true"]');
+  if(exM) exM.remove();
+  const liM=document.createElement('li');
+  liM.dataset.descanso="true";
+  liM.innerHTML="Descanso Total - "+formatTime(restTotal);
+  mUl.appendChild(liM);
 }
 
-/* CSV */
+/* ---------- EXPORT CSV ---------- */
 function exportarCSV(){
   if(!treinoIniciado){
     alert("Você não iniciou o treino ainda!");
@@ -306,7 +389,7 @@ function exportarCSV(){
   document.body.removeChild(link);
 }
 
-/* FUNCS UTILS */
+/* Format time com ms */
 function formatTime(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
@@ -314,70 +397,52 @@ function formatTime(ms){
   const ms2=Math.floor((ms%1000)/10);
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms2).padStart(2,'0')}`;
 }
+/* Format time SEM ms - p/ "Ultimo Exercício" */
 function formatTimeNoMs(ms){
   const totalSec=Math.floor(ms/1000);
   const m=Math.floor(totalSec/60);
   const s=totalSec%60;
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
-function fecharLightbox(){
-  document.getElementById('lightbox').classList.remove('open');
-  document.getElementById('lightboxImg').src="";
-}
+
 function setCheckBoxesDisabled(disabled){
   document.querySelectorAll('input[type="checkbox"]').forEach(ch=>{
     if(!ch.checked) ch.disabled=disabled;
   });
 }
+function fecharLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src="";
+}
 
-/* GYMRATS => Tentar abrir app no Android. 
-   Ex: intent:// 
-   Se falhar, fallback pro store. 
-*/
+/* GYMRATS / SPOTIFY */
 function abrirGymrats(){
-  // Tenta abrir App
-  // Uma forma: window.location = "intent://com.hasz.gymrats.app#Intent;scheme=;end";
-  // ou custom URI scheme. 
-  // Em fallback, abre store.
-  if(/android/i.test(navigator.userAgent)){
-    // Android
-    window.location.href = "intent://com.hasz.gymrats.app#Intent;scheme=gymrats;package=com.hasz.gymrats.app;end";
-    setTimeout(()=>{
-      window.open("https://play.google.com/store/apps/details?id=com.hasz.gymrats.app","_blank");
-    },2000);
-  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
-    // iOS -> custom URL scheme ou store
-    window.location.href = "gymrats://";
-    setTimeout(()=>{
-      window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
-    },2000);
-  } else {
-    // Desktop fallback
-    window.open("https://play.google.com/store/apps/details?id=com.hasz.gymrats.app","_blank");
-  }
+  window.open("https://apps.apple.com/br/app/gymrats-desafio-fitness/id1453444814","_blank");
 }
 function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
 
-/* ABRIR CAMERA NATIVA => 'camera://' ou Intents custom */
-function abrirCameraNativo(){
-  if(/android/i.test(navigator.userAgent)){
-    window.location.href="intent://camera#Intent;action=android.media.action.IMAGE_CAPTURE;end";
-  } else if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
-    // iOS -> "camera://" se tiver scheme, fallback 
-    window.location.href="camera://";
-  } else {
-    alert("Não foi possível abrir a câmera nativa neste dispositivo.");
+/* CAMERA */
+async function abrirCamera(){
+  try{
+    const st=await navigator.mediaDevices.getUserMedia({video:true});
+    alert("Câmera do navegador ativada!");
+  } catch(e){
+    alert("Não foi possível acessar a câmera: "+ e);
   }
 }
 
-/* CHANGELOG MODAL */
-function abrirChangelog(){
-  document.getElementById('modalChangelog').classList.add('show');
+/* TRACKER Toggles */
+let trackerDesktopVisible=false;
+function toggleTrackerDesktop(){
+  trackerDesktopVisible=!trackerDesktopVisible;
+  document.getElementById('trackerDesktop').style.display=trackerDesktopVisible?"block":"none";
 }
-function fecharChangelog(){
-  document.getElementById('modalChangelog').classList.remove('show');
+let trackerMobileOpen=false;
+function toggleTrackerMobile(){
+  trackerMobileOpen=!trackerMobileOpen;
+  document.getElementById('trackerMobile').style.display=trackerMobileOpen?"block":"none";
 }
 
 /* CONFETTI */
@@ -417,4 +482,12 @@ function stopConfetti(){
   if(ctx){
     ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
   }
+}
+
+/* MODAL CHANGELOG */
+function abrirChangelog(){
+  document.getElementById('modalChangelog').classList.add('show');
+}
+function fecharChangelog(){
+  document.getElementById('modalChangelog').classList.remove('show');
 }
