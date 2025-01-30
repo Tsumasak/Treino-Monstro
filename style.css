@@ -6,6 +6,7 @@
    - Timer Desktop igual ao Mobile
    - Espaço maior entre .exercicios
    - Fundo desfocado na modal de Parabéns
+   - Integração com Local Storage para persistência
 ====================== */
 
 * {
@@ -55,6 +56,10 @@ header {
   width:36px; height:36px; border:none; border-radius:12px;
   cursor:pointer; overflow:hidden;
   transition:transform 0.2s;
+  font-size: 1.2rem; /* Tamanho do ícone */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .brand-button img {
   width:100%; height:100%; object-fit:cover; display:block;
@@ -209,7 +214,7 @@ section h2 { margin-bottom:1rem; color:#333; }
   padding:1rem; margin-bottom:1rem;
 }
 .exercicios {
-  margin-bottom: 2rem; /* Aumentei para mais espaço */
+  margin-bottom: 2rem; /* Espaço aumentado para mais conforto visual */
 }
 .exercicios h3 {
   margin-bottom:0.5rem; color:#444; font-weight:600;
@@ -379,7 +384,10 @@ label {
   border-radius:12px;
   padding:2rem; 
   text-align:center;
-  max-width:400px; width:90%;
+  max-width:800px; /* Alterado de 400px */
+  width:90%;
+  max-height:80vh; /* Novo */
+  overflow-y:auto; /* Novo (scroll) */
 }
 .modal-congrats {
   position:fixed; top:0; left:0; width:100%; height:100%;
