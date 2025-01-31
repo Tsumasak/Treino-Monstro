@@ -62,7 +62,7 @@
       <h2>Parabéns, treino concluído!</h2>
       <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
       <div class="photo-container">
-        <img id="pictureFromCamera" style="display: none; width: 80%; height: auto; margin-bottom: 1rem; border-radius: 12px;"/>
+        <img id="pictureFromCamera" style="display: none; width: 80%; height: auto; margin-bottom: 1rem; margin-top: 1rem; border-radius: 12px;"/>
         <div id="photoButtons" style="display: none;">
           <button class="photo-btn" id="downloadPhotoBtn">Download</button>
           <button class="photo-btn" id="sharePhotoBtn">Compartilhar</button>
@@ -74,6 +74,13 @@
         <button class="round-btn" onclick="fecharCongrats()">Fechar</button>
       </div>
       <input id="cameraFileInput" type="file" accept="image/*" capture="environment" style="display: none;">
+    </div>
+  </div>
+
+  <!-- Countdown Modal -->
+  <div class="modal-congrats" id="countdownOverlay">
+    <div class="modal-congrats-content">
+      <div id="countdownDiv"></div>
     </div>
   </div>
 
