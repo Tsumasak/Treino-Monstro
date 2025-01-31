@@ -138,6 +138,28 @@ window.addEventListener('DOMContentLoaded', () => {
       const img = document.getElementById("pictureFromCamera");
       img.src = window.URL.createObjectURL(file);
       img.style.display = "block";
+      document.getElementById("photoButtons").style.display = "flex";
+    }
+  });
+
+  document.getElementById("downloadPhotoBtn").addEventListener("click", function () {
+    const img = document.getElementById("pictureFromCamera");
+    const link = document.createElement("a");
+    link.href = img.src;
+    link.download = "treino_foto.jpg";
+    link.click();
+  });
+
+  document.getElementById("sharePhotoBtn").addEventListener("click", function () {
+    const img = document.getElementById("pictureFromCamera");
+    if (navigator.share) {
+      navigator.share({
+        title: 'Treino Monstro',
+        text: 'Confira minha foto Monstra do treino!',
+        url: img.src
+      }).catch(console.error);
+    } else {
+      alert("Compartilhamento não suportado neste dispositivo.");
     }
   });
 });

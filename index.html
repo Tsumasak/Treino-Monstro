@@ -61,11 +61,17 @@
     <div class="modal-congrats-content">
       <h2>Parabéns, treino concluído!</h2>
       <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
-      <button class="round-btn" onclick="exportarCSV()">Exportar</button>
-      <button class="round-btn" onclick="fecharCongrats()">Fechar</button>
-      <label for="cameraFileInput" class="round-btn">Tirar Foto</label>
+      <img id="pictureFromCamera" style="display: none; width: 100%; height: auto; margin-bottom: 1rem;"/>
+      <div id="photoButtons" style="display: none;">
+        <button class="round-btn" id="downloadPhotoBtn">Download</button>
+        <button class="round-btn" id="sharePhotoBtn">Compartilhar</button>
+      </div>
+      <div class="button-group">
+        <button class="round-btn" onclick="exportarCSV()">Exportar Treino</button>
+        <label for="cameraFileInput" class="round-btn mobile-only">Tirar Foto</label>
+        <button class="round-btn" onclick="fecharCongrats()">Fechar</button>
+      </div>
       <input id="cameraFileInput" type="file" accept="image/*" capture="environment" style="display: none;">
-      <img id="pictureFromCamera" style="display: none; width: 100%; height: auto; margin-top: 1rem;"/>
     </div>
   </div>
 

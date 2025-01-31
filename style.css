@@ -22,7 +22,7 @@ html,body {
 /* Confetti Canvas */
 #confettiCanvas {
   position:fixed; top:0; left:0; width:100%; height:100%;
-  pointer-events:none; z-index:1;
+  pointer-events:none; z-index:99998; /* Ajustado para ficar atrás da modal */
 }
 
 /* HEADER */
@@ -392,7 +392,7 @@ label {
 .modal-congrats {
   position:fixed; top:0; left:0; width:100%; height:100%;
   display:none; justify-content:center; align-items:center;
-  z-index:99999;
+  z-index:99999; /* Ajustado para ficar à frente dos confetes */
   /* Fundo desfocado */
   background: rgba(255,255,255,0.4);
   backdrop-filter: blur(8px);
@@ -407,8 +407,39 @@ label {
   z-index:100000;
 }
 .modal-congrats-content h2 { margin-bottom:1rem; }
-.modal-congrats-content button {
-  /* Retirados styles inline, usando .round-btn no HTML */
+.modal-congrats-content .button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.modal-congrats-content .mobile-only {
+  display: none;
+}
+@media (max-width: 768px) {
+  .modal-congrats-content .mobile-only {
+    display: inline-block;
+  }
+}
+
+/* Botões de foto */
+#photoButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+#photoButtons button {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+#photoButtons button:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.05);
 }
 
 /* FOOTER */
