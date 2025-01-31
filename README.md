@@ -1,6 +1,6 @@
 # Treino Monstro
 
-> **Versão Atual**: 1.4.0
+> **Versão Atual**: 1.5.2
 
 Este projeto é um site de **Treino A/B** com **contadores** de Exercício e Descanso, 
 um **tracker** de exercícios, e outras funcionalidades.
@@ -92,13 +92,18 @@ um **tracker** de exercícios, e outras funcionalidades.
 - Nova lógica do botão Gymrats
 - Implementação de Local Storage para persistência de dados
 
-
 ### Versão 1.4.0
 - Persistência de dados utilizando Local Storage
 - Restabelecimento do estado do treino ao recarregar a página
 - Salvamento automático após interações relevantes
 - Correção de comportamento dos contadores ao pausar e recarregar a página
 - Limpeza do Local Storage ao encerrar o treino
+
+### Versão 1.5.2
+- Ajuste na disposição dos botões de download e compartilhar na modal de Parabéns
+- Adição de modal para Countdown de início de treino
+- Confetes trazidos para frente do blur
+- Ajustes no estilo da modal de Countdown
 
 ---
 
