@@ -131,6 +131,15 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Carregar dados do Local Storage
   loadData();
+
+  document.getElementById("cameraFileInput").addEventListener("change", function () {
+    const file = this.files[0];
+    if (file) {
+      const img = document.getElementById("pictureFromCamera");
+      img.src = window.URL.createObjectURL(file);
+      img.style.display = "block";
+    }
+  });
 });
 
 /* ---------- FUNÇÕES: PLAY/PAUSE/STOP ---------- */
@@ -483,47 +492,6 @@ function abrirSpotify(){
   window.open("https://www.spotify.com/","_blank");
 }
 
-/* CAMERA */
-async function abrirCamera(){
-  const ua = navigator.userAgent.toLowerCase();
-  // Tentativa de abrir "camera://" (não padronizado) + fallback
-  if(/android/.test(ua)){
-    window.location.href = "camera://";
-    setTimeout(()=>{
-      openBrowserCamera();
-    },1200);
-  } else if(/iphone|ipad|ipod/.test(ua)){
-    window.location.href = "camera://";
-    setTimeout(()=>{
-      openBrowserCamera();
-    },1200);
-  } else {
-    // Desktop ou outro
-    openBrowserCamera();
-  }
-}
-
-function openBrowserCamera(){
-  navigator.mediaDevices.getUserMedia({video:true})
-    .then(stream=>{
-      alert("Câmera do navegador ativada!");
-      // Exibe preview
-      const video = document.createElement('video');
-      video.autoplay = true;
-      video.srcObject = stream;
-      video.style.position = 'fixed';
-      video.style.bottom = '0';
-      video.style.right = '0';
-      video.style.width = '200px';
-      video.style.height = '150px';
-      video.style.zIndex = '100000';
-      document.body.appendChild(video);
-    })
-    .catch(e=>{
-      alert("Não foi possível acessar a câmera: "+ e);
-    });
-}
-
 /* TRACKER Toggles */
 function toggleTrackerDesktop(){
   trackerDesktopVisible = !trackerDesktopVisible;
@@ -807,74 +775,4 @@ function formatTimeNoMs(ms){
 
 /* ---------- PERSISTÊNCIA DE DADOS ---------- */
 /* Funções saveData() e loadData() já implementadas acima */
-
-// Função para abrir a câmera em fullscreen
-function abrirCameraFullscreen() {
-  document.getElementById('cameraInput').click();
-}
-
-// Função para adicionar botões de controle da câmera
-function addCameraControls() {
-  document.getElementById('photoButton').addEventListener('click', abrirCameraFullscreen);
-  document.getElementById('switchButton').addEventListener('click', trocarCamera);
-  document.getElementById('closeButton').addEventListener('click', fecharCamera);
-  document.getElementById('cameraInput').addEventListener('change', handleCameraInput);
-}
-
-// Função para lidar com a entrada da câmera
-function handleCameraInput(event) {
-  const file = event.target.files[0];
-  if (file) {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.style.position = 'fixed';
-    img.style.top = '0';
-    img.style.left = '0';
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'cover';
-    img.style.zIndex = '100000';
-    document.body.appendChild(img);
-  }
-}
-
-// Função para trocar entre câmera frontal e traseira
-function trocarCamera() {
-  alert("Troca de câmera não suportada com HTML Media Capture.");
-}
-
-// Função para fechar a câmera e remover os controles
-function fecharCamera() {
-  const img = document.querySelector('img[src^="blob:"]');
-  if (img) {
-    img.remove();
-  }
-  document.getElementById('cameraControls').style.display = 'none';
-  document.getElementById('modalCongrats').classList.add('show');
-}
-
-// Adicionar evento ao botão de abrir câmera
-document.getElementById('openCameraBtn').addEventListener('click', abrirCameraFullscreen);
-
-// Inicializar controles da câmera
-addCameraControls();
-
-document.getElementById('captureButton').addEventListener('click', capturePhoto);
-document.getElementById('switchCameraButton').addEventListener('click', switchCamera);
-document.getElementById('closeCameraButton').addEventListener('click', closeCamera);
-
-function capturePhoto() {
-  // Lógica para capturar foto
-  console.log('Foto capturada');
-}
-
-function switchCamera() {
-  // Lógica para trocar a câmera
-  console.log('Câmera trocada');
-}
-
-function closeCamera() {
-  // Lógica para fechar a câmera
-  console.log('Câmera fechada');
-}
 

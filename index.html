@@ -63,7 +63,9 @@
       <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
       <button class="round-btn" onclick="exportarCSV()">Exportar</button>
       <button class="round-btn" onclick="fecharCongrats()">Fechar</button>
-      <button class="round-btn" onclick="abrirCameraFullscreen()">Abrir Câmera</button>
+      <label for="cameraFileInput" class="round-btn">Tirar Foto</label>
+      <input id="cameraFileInput" type="file" accept="image/*" capture="environment" style="display: none;">
+      <img id="pictureFromCamera" style="display: none; width: 100%; height: auto; margin-top: 1rem;"/>
     </div>
   </div>
 
@@ -453,14 +455,6 @@
   <div class="lightbox" id="lightbox">
     <button class="close-btn" onclick="fecharLightbox()">X</button>
     <img id="lightboxImg" src="" alt="Exercício"/>
-  </div>
-
-  <!-- Adicionar elementos de controle da câmera -->
-  <div id="cameraControls" style="display: none;">
-    <input type="file" accept="image/*" capture="environment" id="cameraInput" style="display: none;">
-    <button id="photoButton">📸</button>
-    <button id="switchButton">🔄</button>
-    <button id="closeButton">❌</button>
   </div>
 
   <!-- Script JS -->
