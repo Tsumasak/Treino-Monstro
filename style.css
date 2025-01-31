@@ -430,3 +430,34 @@ footer {
   .main-content{ padding-bottom:14rem; }
   .bottom-bar{ display:flex; }
 }
+
+/* Camera Controls */
+#cameraControls {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100001;
+  display: flex;
+  gap: 10px;
+}
+
+#cameraControls button {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+#cameraControls button:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: scale(1.1);
+}

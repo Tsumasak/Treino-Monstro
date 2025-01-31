@@ -43,6 +43,12 @@ let countdownInterval = null;
 let trackerDesktopVisible = false;
 let trackerMobileOpen = false;
 
+// Câmera
+let cameraStream = null;
+let isFrontCamera = true;
+let mediaRecorder = null;
+let recordedChunks = [];
+
 /* Evento DOMContentLoaded */
 window.addEventListener('DOMContentLoaded', () => {
   // Inicialização dos checkboxes
@@ -801,4 +807,109 @@ function formatTimeNoMs(ms){
 
 /* ---------- PERSISTÊNCIA DE DADOS ---------- */
 /* Funções saveData() e loadData() já implementadas acima */
+
+// Função para abrir a câmera em fullscreen
+async function abrirCameraFullscreen() {
+  const constraints = {
+    video: {
+      facingMode: isFrontCamera ? 'user' : 'environment'
+    }
+  };
+
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    const video = document.createElement('video');
+    video.id = 'cameraVideo';
+    video.autoplay = true;
+    video.srcObject = cameraStream;
+    video.style.position = 'fixed';
+    video.style.top = '0';
+    video.style.left = '0';
+    video.style.width = '100%';
+    video.style.height = '100%';
+    video.style.zIndex = '100000';
+    document.body.appendChild(video);
+
+    // Mostrar controles da câmera
+    document.getElementById('cameraControls').style.display = 'flex';
+  } catch (e) {
+    alert("Não foi possível acessar a câmera: " + e);
+  }
+}
+
+// Função para adicionar botões de controle da câmera
+function addCameraControls() {
+  document.getElementById('photoButton').addEventListener('click', tirarFoto);
+  document.getElementById('videoButton').addEventListener('click', gravarVideo);
+  document.getElementById('switchButton').addEventListener('click', trocarCamera);
+  document.getElementById('closeButton').addEventListener('click', fecharCamera);
+}
+
+// Função para tirar foto
+function tirarFoto() {
+  const video = document.getElementById('cameraVideo');
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/png');
+  const link = document.createElement('a');
+  link.href = dataUrl;
+  link.download = 'foto.png';
+  link.click();
+}
+
+// Função para gravar vídeo
+function gravarVideo() {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    return;
+  }
+
+  recordedChunks = [];
+  mediaRecorder = new MediaRecorder(cameraStream);
+  mediaRecorder.ondataavailable = (event) => {
+    if (event.data.size > 0) {
+      recordedChunks.push(event.data);
+    }
+  };
+  mediaRecorder.onstop = () => {
+    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'video.webm';
+    link.click();
+  };
+  mediaRecorder.start();
+}
+
+// Função para trocar entre câmera frontal e traseira
+function trocarCamera() {
+  isFrontCamera = !isFrontCamera;
+  fecharCamera();
+  abrirCameraFullscreen();
+}
+
+// Função para fechar a câmera e voltar para a tela de treino terminado
+function fecharCamera() {
+  if (cameraStream) {
+    const tracks = cameraStream.getTracks();
+    tracks.forEach(track => track.stop());
+    cameraStream = null;
+  }
+  const video = document.getElementById('cameraVideo');
+  if (video) {
+    video.remove();
+  }
+  document.getElementById('cameraControls').style.display = 'none';
+  document.getElementById('modalCongrats').classList.add('show');
+}
+
+// Adicionar evento ao botão de abrir câmera
+document.getElementById('openCameraBtn').addEventListener('click', abrirCameraFullscreen);
+
+// Inicializar controles da câmera
+addCameraControls();
 
