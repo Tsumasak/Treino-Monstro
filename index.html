@@ -61,10 +61,12 @@
     <div class="modal-congrats-content">
       <h2>Parabéns, treino concluído!</h2>
       <p>Não esqueça de tirar uma foto, afinal se não tem foto, não conta!</p>
-      <img id="pictureFromCamera" style="display: none; width: 100%; height: auto; margin-bottom: 1rem;"/>
-      <div id="photoButtons" style="display: none;">
-        <button class="round-btn" id="downloadPhotoBtn">Download</button>
-        <button class="round-btn" id="sharePhotoBtn">Compartilhar</button>
+      <div class="photo-container">
+        <img id="pictureFromCamera" style="display: none; width: 80%; height: auto; margin-bottom: 1rem; border-radius: 12px;"/>
+        <div id="photoButtons" style="display: none;">
+          <button class="photo-btn" id="downloadPhotoBtn">Download</button>
+          <button class="photo-btn" id="sharePhotoBtn">Compartilhar</button>
+        </div>
       </div>
       <div class="button-group">
         <button class="round-btn" onclick="exportarCSV()">Exportar Treino</button>

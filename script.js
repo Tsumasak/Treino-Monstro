@@ -156,7 +156,7 @@ window.addEventListener('DOMContentLoaded', () => {
       navigator.share({
         title: 'Treino Monstro',
         text: 'Confira minha foto Monstra do treino!',
-        url: img.src
+        files: [new File([img.src], "treino_foto.jpg", { type: "image/jpeg" })]
       }).catch(console.error);
     } else {
       alert("Compartilhamento não suportado neste dispositivo.");
